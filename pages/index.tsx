@@ -11,6 +11,7 @@ import PricingSection from '@/components/defaultLanding/PricingSection';
 import useTheme from 'hooks/useTheme';
 import env from '@/lib/env';
 import Head from 'next/head';
+import { CONSTANTS } from '@/components/constants';
 
 const Home: NextPageWithLayout = () => {
   const { toggleTheme, selectedTheme } = useTheme();
@@ -26,7 +27,7 @@ const Home: NextPageWithLayout = () => {
         <div className="navbar bg-base-100 px-0 sm:px-1">
           <div className="flex-1">
             <Link href="/" className="btn btn-ghost text-xl normal-case">
-              BoxyHQ
+              {CONSTANTS.appName}
             </Link>
           </div>
           <div className="flex-none">

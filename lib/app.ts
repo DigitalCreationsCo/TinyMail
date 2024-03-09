@@ -2,8 +2,8 @@ import packageInfo from '../package.json';
 
 const app = {
   version: packageInfo.version,
-  name: 'BoxyHQ',
-  logoUrl: 'https://boxyhq.com/img/logo.png',
+  name: 'TinyMail',
+  logoUrl: '/logo.png',
   url: 'http://localhost:4002',
 };
 

@@ -1,4 +1,4 @@
-import { Cog6ToothIcon, CodeBracketIcon } from '@heroicons/react/24/outline';
+import { Cog6ToothIcon, EnvelopeIcon } from '@heroicons/react/24/outline';
 import { useTranslation } from 'next-i18next';
 import NavigationItems from './NavigationItems';
 import { NavigationProps, MenuItem } from './NavigationItems';
@@ -12,10 +12,10 @@ const TeamNavigation = ({ slug, activePathname }: NavigationItemsProps) => {
 
   const menus: MenuItem[] = [
     {
-      name: t('all-products'),
-      href: `/teams/${slug}/products`,
-      icon: CodeBracketIcon,
-      active: activePathname === `/teams/${slug}/products`,
+      name: t('email-templates'),
+      href: `/teams/${slug}/templates`,
+      icon: EnvelopeIcon,
+      active: activePathname === `/teams/${slug}/templates`,
     },
     {
       name: t('settings'),

@@ -7,9 +7,9 @@ const HeroSection = () => {
     <div className="hero py-52">
       <div className="hero-content text-center">
         <div className="max-w-7md">
-          <h1 className="text-5xl font-bold"> {t('enterprise-saas-kit')}</h1>
+          <h1 className="text-5xl font-bold"> {t('newsletter-automation-made-easy')}</h1>
           <p className="py-6 text-2xl font-normal">
-            {t('kickstart-your-enterprise')}
+            {t('kickstart-your-newsletter')}
           </p>
           <div className="flex items-center justify-center gap-2 ">
             <Link
