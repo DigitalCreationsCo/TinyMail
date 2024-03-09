@@ -192,6 +192,7 @@
   "api-keys": "API Keys",
   "api-keys-description": "API keys allow you to authenticate with the API.",
   "create-template": "Create Template",
+  "save-template": "Save Template",
   "templates-placeholder": "Your email templates are displayed here.",
   "request-new-link": "Request new link",
   "unlock-account-link-sent": "A new link has been sent to your email address.",

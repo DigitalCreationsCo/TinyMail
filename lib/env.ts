@@ -118,6 +118,10 @@ const env = {
     secretKey: process.env.STRIPE_SECRET_KEY,
     webhookSecret: process.env.STRIPE_WEBHOOK_SECRET,
   },
+
+  tinyMCE: {
+    apiKey: process.env.TINYMCE_API_KEY,
+  }
 };
 
 export default env;
