@@ -47,7 +47,7 @@ const Templates = ({ templates, team, removeTemplate }: TemplatesProps) => {
         </thead>
         <tbody>
           {templates.map((template) => (
-            <tr key={template.id}>
+            <tr className="cursor-pointer" key={template.id} onClick={() => router.push('/teams/[slug]/templates[id]/edit', `/teams/${team.slug}/templates/${template.id}/edit`)}>
               <td>
                 <Image src={decodeURIComponent(template.image as string)} alt={template.title} width={100} height={100} />
                 </td>
@@ -59,7 +59,9 @@ const Templates = ({ templates, team, removeTemplate }: TemplatesProps) => {
               <Button
                 color="error"
                 size="sm"
-                onClick={() => {
+                onClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
                   setTemplate(template);
                   setAskConfirmation(true);
                 }}>
