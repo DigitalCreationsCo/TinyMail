@@ -190,12 +190,11 @@ model Template {
   id          String   @id @default(uuid())
   title       String
   description String
-  image       String
+  image       String?
   content     String
 
   teamId      String
   authorId    String
-  role      Role     @default(MEMBER)
 
   team Team @relation(fields: [teamId], references: [id], onDelete: Cascade)
   author User @relation(fields: [authorId], references: [id], onDelete: Cascade)

@@ -20,7 +20,10 @@ export type EventType =
   | 'webhook.update'
   | 'team.create'
   | 'team.update'
-  | 'team.delete';
+  | 'team.delete'
+  | 'template.create'
+  | 'template.update'
+  | 'template.remove';
 
 type Request = {
   action: EventType;

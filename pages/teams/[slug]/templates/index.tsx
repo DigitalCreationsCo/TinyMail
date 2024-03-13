@@ -1,3 +1,5 @@
+import useSWR from 'swr';
+import fetcher from '@/lib/fetcher';
 import { Error, Loading } from '@/components/shared';
 import env from '@/lib/env';
 import useTeam from 'hooks/useTeam';
@@ -6,46 +8,60 @@ import { useTranslation } from 'next-i18next';
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
 import type { TeamFeature } from 'types';
 import { WithLoadingAndError } from '@/components/shared';
-import { Button } from 'react-daisyui';
-import { useRouter } from 'next/router';
+import useCanAccess from 'hooks/useCanAccess';
+import Templates from '@/components/templates/Templates';
+import { defaultHeaders } from '@/lib/common';
+import type { ApiResponse } from 'types';
+import toast from 'react-hot-toast';
+import { Template } from '@prisma/client';
 
-const Templates = ({ teamFeatures }: { teamFeatures: TeamFeature }) => {
-  const router = useRouter();
+const TemplatesPage = ({ teamFeatures }: { teamFeatures: TeamFeature }) => {
   const { t } = useTranslation('common');
-  const { isLoading, isError, team } = useTeam();
+  const { canAccess } = useCanAccess();
+  const { team } = useTeam();
+  const { data, isLoading, error, mutate } = useSWR(
+    team?.slug ? `/api/teams/${team?.slug}/templates` : null,
+    fetcher
+  );
 
   if (isLoading) {
     return <Loading />;
   }
 
-  if (isError) {
-    return <Error message={isError.message} />;
+  if (error) {
+    return <Error message={error.message} />;
   }
 
   if (!team) {
     return <Error message={t('team-not-found')} />;
   }
 
-  return (
-    <WithLoadingAndError isLoading={isLoading} error={isError}>
-      <div className="space-y-3">
-        <div className="flex justify-between items-center">
-          <div className="space-y-3">
-      <h2 className="text-xl font-semibold mb-2">
-        {t('email-templates')}
-      </h2>
-      <p className='text-sm'>{t('templates-placeholder')}
-        </p> </div>
-          <Button
-            color="primary"
-            size="md"
-            onClick={() => router.push('/teams/[slug]/templates/create', `/teams/${team.slug}/templates/create`)}
-          >
-            {t('create-template')}
-          </Button>
-        </div>
-        </div>
+  const templates = data?.data || [];
 
+  const removeTemplate = async (team, template: Template) => {
+    const response = await fetch(`/api/teams/${team.slug}/templates?templateId=${template.id}`, {
+      method: 'DELETE',
+      headers: defaultHeaders,
+    });
+
+    const json = (await response.json()) as ApiResponse;
+
+    if (!response.ok) {
+      toast.error(json.error.message);
+      return;
+    }
+
+    toast.success(t('leave-team-success'));
+    mutate();
+  };
+
+  return (
+    <WithLoadingAndError isLoading={isLoading} error={error}>
+      {canAccess('team_templates', ['read', 'create', 'delete', 'update']) && (
+        <div className="space-y-3">
+          <Templates templates={templates} team={team} removeTemplate={removeTemplate}/>
+        </div>
+      )}
     </WithLoadingAndError>
   );
 };
@@ -61,4 +77,4 @@ export async function getServerSideProps({
   };
 }
 
-export default Templates;
+export default TemplatesPage;

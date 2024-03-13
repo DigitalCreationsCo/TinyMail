@@ -1,6 +1,6 @@
 import { sendEmail } from './sendEmail';
 import { render } from '@react-email/render';
-import { ResetPasswordEmail } from '@/components/emailTemplates';
+import { ResetPasswordEmail } from '@/components/email';
 import app from '../app';
 import env from '../env';
 import { User } from '@prisma/client';

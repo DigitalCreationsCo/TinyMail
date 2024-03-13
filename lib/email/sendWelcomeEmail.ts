@@ -1,6 +1,6 @@
 import { render } from '@react-email/components';
 import { sendEmail } from './sendEmail';
-import { WelcomeEmail } from '@/components/emailTemplates';
+import { WelcomeEmail } from '@/components/email';
 
 export const sendWelcomeEmail = async (
   name: string,

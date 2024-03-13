@@ -1,7 +1,7 @@
 import type { User, VerificationToken } from '@prisma/client';
 import { sendEmail } from './sendEmail';
 import { render } from '@react-email/components';
-import { VerificationEmail } from '@/components/emailTemplates';
+import { VerificationEmail } from '@/components/email';
 import app from '../app';
 import env from '../env';
 

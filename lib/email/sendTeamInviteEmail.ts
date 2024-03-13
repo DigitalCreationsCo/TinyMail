@@ -1,6 +1,6 @@
 import { Invitation, Team } from '@prisma/client';
 import { sendEmail } from './sendEmail';
-import { TeamInviteEmail } from '@/components/emailTemplates';
+import { TeamInviteEmail } from '@/components/email';
 import { render } from '@react-email/components';
 import env from '../env';
 import app from '../app';

@@ -6,7 +6,7 @@ import { User } from '@prisma/client';
 import { prisma } from '@/lib/prisma';
 import { sendEmail } from './email/sendEmail';
 import { createVerificationToken } from 'models/verificationToken';
-import AccountLocked from '@/components/emailTemplates/AccountLocked';
+import AccountLocked from '@/components/email/AccountLocked';
 
 const UNLOCK_ACCOUNT_TOKEN_EXPIRATION = 7 * 24 * 60 * 60 * 1000; // 7 days
 

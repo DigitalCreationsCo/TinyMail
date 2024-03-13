@@ -1,7 +1,7 @@
 import { sendEmail } from './sendEmail';
 import { render } from '@react-email/render';
 import app from '../app';
-import MagicLink from '@/components/emailTemplates/MagicLink';
+import MagicLink from '@/components/email/MagicLink';
 
 export const sendMagicLink = async (email: string, url: string) => {
   const subject = `Sign in to ${app.name}`;

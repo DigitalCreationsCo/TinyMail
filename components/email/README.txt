@@ -1,0 +1,1 @@
+These are templates for emails delivered to TinyMail users.
