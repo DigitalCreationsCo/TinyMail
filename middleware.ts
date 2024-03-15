@@ -15,6 +15,7 @@ const unAuthenticatedRoutes = [
   '/api/invitations/*',
   '/api/webhooks/stripe',
   '/api/webhooks/dsync',
+  '/api/teams/*/templates/*',
   '/auth/**',
   '/invitations/*',
   '/terms-condition',

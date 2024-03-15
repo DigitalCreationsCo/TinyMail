@@ -123,7 +123,7 @@ const Login: NextPageWithLayout<
       <div className="rounded p-6 border">
         <div className="flex gap-2 flex-wrap">
           {authProviders.github && <GithubButton />}
-          {authProviders.google && <GoogleButton />}
+          {/* {authProviders.google && <GoogleButton />} */}
         </div>
 
         {(authProviders.github || authProviders.google) &&

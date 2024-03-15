@@ -7,7 +7,7 @@ import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
 import { Button } from 'react-daisyui';
 import { useRouter } from 'next/router';
 import { Editor } from '@tinymce/tinymce-react';
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { PencilIcon } from '@heroicons/react/24/outline';
 import { useFormik } from 'formik';
 import toast from 'react-hot-toast';
@@ -15,24 +15,26 @@ import * as Yup from 'yup';
 import html2canvas from 'html2canvas-pro';
 import { useSession } from 'next-auth/react';
 import type { ApiResponse } from 'types';
+import useSWR from 'swr';
+import fetcher from '@/lib/fetcher';
+import '@/styles/editor.module.css';
 
 import { defaultHeaders } from '@/lib/common';
 import { Template } from '@prisma/client';
+import { getTemplate } from 'models/template';
 
 const schema = Yup.object().shape({
   title: Yup.string().required('Enter a title'),
 });
 
-const CreateTemplate = ({ apiKey }: { apiKey: string }) => {
-  const [title, setTitle] = useState('New Template');
+const EditTemplate = ({ apiKey, template }: { apiKey: string; template: Template }) => {
+  const [title, setTitle] = useState(template.title);
   const editor = useRef<Editor | null>(null)
 
   const router = useRouter();
   const { t } = useTranslation('common');
-  const { isLoading, isError, team } = useTeam();
-  const { status, data } = useSession();
-
-  const user = data!.user;
+  const { team, isLoading, isError } = useTeam();
+  const { data, status } = useSession();
 
   const formik = useFormik({
     initialValues: {
@@ -45,20 +47,23 @@ const CreateTemplate = ({ apiKey }: { apiKey: string }) => {
     },
     validationSchema: schema,
     onSubmit: async () => {
-      const saveTemplate = {
+
+      console.info('content: ', editor.current?.editor?.getContent());
+      
+      const updateTemplate = {
+        id: template.id,
         title,
         description: '',
+        backgroundColor: editor.current?.editor?.getBody().style.backgroundColor || '',
         // take a screenshot of the editor content and save it as an image
         image: encodeURIComponent(await (await html2canvas(document.querySelector('#editor-window') as HTMLElement)).toDataURL('image/png')),
         content: editor.current?.editor?.getContent() || '',
-        teamId: team!.id,
-        authorId: user.id,
       }
 
       const response = await fetch(`/api/teams/${team!.slug}/templates`, {
-        method: 'POST',
+        method: 'PATCH',
         headers: defaultHeaders,
-        body: JSON.stringify(saveTemplate),
+        body: JSON.stringify(updateTemplate),
       });
   
       const json = (await response.json()) as ApiResponse<Template[]>;
@@ -68,7 +73,7 @@ const CreateTemplate = ({ apiKey }: { apiKey: string }) => {
         return;
       }
 
-      toast.success(t('successfully-save-successful'));
+      toast.success(t('successfully-updated'));
       formik.resetForm();
 
       // redirect to the team templates page
@@ -121,11 +126,25 @@ const CreateTemplate = ({ apiKey }: { apiKey: string }) => {
 
           <Editor
             ref={editor}
+            // onInit={(evt, _editor) => editor.current = _editor}
             apiKey={apiKey}
+            initialValue={template.content}
             init={{
+
+              formats: {
+                h1: { block: 'h1', classes: 'h1' },
+                h2: { block: 'h2', classes: 'h2' },
+                h3: { block: 'h3', classes: 'h3' },
+                p: { block: 'p', classes: 'p' },
+                a: { selector: 'a', classes: 'a' },
+              },
+              
+              content_css: '/styles/editor.css',
+              content_style: "body {max-width: 600px; margin-left: auto; margin-right: auto;} h1 { font-size: 60pt; margin: 0, padding: 0; }",
               branding: false,
-              visualblocks_default_state: true,
+              visualblocks_default_state: false,
               block_formats: 'Paragraph=p;Header 1=h1;Header 2=h2;Header 3=h3;Header 4=h4;Header 5=h5;Header 6=h6;',
+              font_size_formats: '8pt 10pt 12pt 14pt 16pt 18pt 24pt 36pt 48pt 60pt',
 
               style_formats: [
                 { title: 'Containers', items: [
@@ -143,8 +162,18 @@ const CreateTemplate = ({ apiKey }: { apiKey: string }) => {
               plugins: 'anchor autolink autosave charmap codesample emoticons image link lists media searchreplace table visualblocks wordcount checklist mediaembed casechange export formatpainter pageembed linkchecker a11ychecker permanentpen powerpaste advtable advcode editimage advtemplate ai mentions tableofcontents footnotes mergetags autocorrect typography inlinecss',
               toolbar: 'undo redo | blocks fontfamily fontsize forecolor backcolor blockColor backgroundColor | bold italic underline strikethrough | link image media table mergetags | align lineheight | checklist numlist bullist indent outdent | emoticons charmap | removeformat output',
 
-
+              mergetags_list: [
+                { value: 'First.Name', title: 'First Name' },
+                { value: 'Email', title: 'Email' },
+              ],
+              ai_request: (request, respondWith) => respondWith.string(() => Promise.reject("See docs to implement AI Assistant")),
+              
               setup: (editor) => {
+
+                editor.on('init', () => {
+                  editor.getBody().style.backgroundColor = template.backgroundColor;
+                  editor.setContent(template.content);
+                })
                 // add body in elementpath
                 editor.ui.registry.addButton('output', {
                   text: 'Output',
@@ -229,7 +258,6 @@ const CreateTemplate = ({ apiKey }: { apiKey: string }) => {
                       initialData: { color: '#ffffff' },
                       onSubmit: (api) => {
                         const data = api.getData();
-                        console.log('Color:', data.color);
                         // change color editor background
                         editor.getBody().style.backgroundColor = data.color;
                         api.close();
@@ -239,14 +267,7 @@ const CreateTemplate = ({ apiKey }: { apiKey: string }) => {
                 });
 
               },
-
-              mergetags_list: [
-                { value: 'First.Name', title: 'First Name' },
-                { value: 'Email', title: 'Email' },
-              ],
-              ai_request: (request, respondWith) => respondWith.string(() => Promise.reject("See docs to implement AI Assistant")),
             }}
-            initialValue=""
           />
         </div>
       </div>
@@ -255,7 +276,7 @@ const CreateTemplate = ({ apiKey }: { apiKey: string }) => {
 };
 
 export async function getServerSideProps({
-  locale,
+  locale, params,
 }: GetServerSidePropsContext) {
   if (!env.tinyMCE.apiKey) {
     return {
@@ -263,12 +284,17 @@ export async function getServerSideProps({
     };
   }
 
+  if (!params || !params.id)
+    return { notFound: true}
+
+  const template = await getTemplate({id: params.id as string});
   return {
     props: {
       ...(locale ? await serverSideTranslations(locale, ['common']) : {}),
       apiKey: env.tinyMCE.apiKey,
+      template: JSON.parse(JSON.stringify(template))
     },
   };
 }
 
-export default CreateTemplate;
+export default EditTemplate;

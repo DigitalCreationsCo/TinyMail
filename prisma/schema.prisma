@@ -192,6 +192,7 @@ model Template {
   description String
   image       String?
   content     String
+  backgroundColor String
 
   teamId      String
   authorId    String

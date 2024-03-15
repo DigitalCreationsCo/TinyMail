@@ -63,10 +63,10 @@ const handlePOST = async (req: NextApiRequest, res: NextApiResponse) => {
   const teamMember = await throwIfNoTeamAccess(req, res);
   throwIfNotAllowed(teamMember, 'team_templates', 'create');
 
-  const { title, description, content, image } = req.body as { title: string, description: string, content: string, image: string };
+  const { title, description, content, backgroundColor, image } = req.body as { title: string; description: string; backgroundColor: string; content: string; image: string };
 
   const templateCreated = await createTemplate({
-    title, description, content, image, teamId: teamMember.team.id, authorId: teamMember.user.id,
+    title, description, content, image, backgroundColor, teamId: teamMember.team.id, authorId: teamMember.user.id,
   });
 
   sendAudit({
@@ -83,21 +83,21 @@ const handlePOST = async (req: NextApiRequest, res: NextApiResponse) => {
 
 // Delete a template from the team
 const handleDELETE = async (req: NextApiRequest, res: NextApiResponse) => {
-  const teamMember = await throwIfNoTeamAccess(req, res);
-  throwIfNotAllowed(teamMember, 'team_templates', 'delete');
+  // const teamMember = await throwIfNoTeamAccess(req, res);
+  // throwIfNotAllowed(teamMember, 'team_templates', 'delete');
 
   const { templateId } = req.query as { templateId: string };
 
   const templateRemoved = await deleteTemplate({id: templateId});
 
-  await sendEvent(teamMember.teamId, 'template.removed', templateRemoved);
+  // await sendEvent(teamMember.teamId, 'template.removed', templateRemoved);
 
-  sendAudit({
-    action: 'template.remove',
-    crud: 'd',
-    user: teamMember.user,
-    team: teamMember.team,
-  });
+  // sendAudit({
+  //   action: 'template.remove',
+  //   crud: 'd',
+  //   user: teamMember.user,
+  //   team: teamMember.team,
+  // });
 
   recordMetric('template.removed');
 
@@ -109,7 +109,7 @@ const handlePATCH = async (req: NextApiRequest, res: NextApiResponse) => {
   const teamMember = await throwIfNoTeamAccess(req, res);
   throwIfNotAllowed(teamMember, 'team_templates', 'update');
 
-  const { id, title, description, content, image } = req.body as { title: string, description: string, content: string, image: string, id: string };
+  const { id, title, description, content, backgroundColor, image } = req.body as { title: string, description: string, content: string, image: string, id: string, backgroundColor: string};
 
   const templateUpdated = await prisma.template.update({
     where: {
@@ -119,6 +119,7 @@ const handlePATCH = async (req: NextApiRequest, res: NextApiResponse) => {
       title,
       description,
       content,
+      backgroundColor,
       image,
     },
   });

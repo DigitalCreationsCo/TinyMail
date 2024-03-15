@@ -15,6 +15,7 @@ import * as Yup from 'yup';
 import html2canvas from 'html2canvas-pro';
 import { useSession } from 'next-auth/react';
 import type { ApiResponse } from 'types';
+import '@/styles/editor.module.css';
 
 import { defaultHeaders } from '@/lib/common';
 import { Template } from '@prisma/client';
@@ -51,6 +52,7 @@ const CreateTemplate = ({ apiKey }: { apiKey: string }) => {
         // take a screenshot of the editor content and save it as an image
         image: encodeURIComponent(await (await html2canvas(document.querySelector('#editor-window') as HTMLElement)).toDataURL('image/png')),
         content: editor.current?.editor?.getContent() || '',
+        backgroundColor: editor.current?.editor?.getBody().style.backgroundColor || '',
         teamId: team!.id,
         authorId: user.id,
       }
@@ -123,6 +125,16 @@ const CreateTemplate = ({ apiKey }: { apiKey: string }) => {
             ref={editor}
             apiKey={apiKey}
             init={{
+
+              formats: {
+                h1: { block: 'h1', classes: 'h1' },
+                h2: { block: 'h2', classes: 'h2' },
+                h3: { block: 'h3', classes: 'h3' },
+                p: { block: 'p', classes: 'p' },
+                a: { selector: 'a', classes: 'a' },
+              },
+
+              content_css: '/styles/editor.css',
               branding: false,
               visualblocks_default_state: true,
               block_formats: 'Paragraph=p;Header 1=h1;Header 2=h2;Header 3=h3;Header 4=h4;Header 5=h5;Header 6=h6;',
