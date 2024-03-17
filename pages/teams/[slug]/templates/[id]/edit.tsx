@@ -126,7 +126,6 @@ const EditTemplate = ({ apiKey, template }: { apiKey: string; template: Template
 
           <Editor
             ref={editor}
-            // onInit={(evt, _editor) => editor.current = _editor}
             apiKey={apiKey}
             initialValue={template.content}
             init={{
@@ -141,6 +140,7 @@ const EditTemplate = ({ apiKey, template }: { apiKey: string; template: Template
               
               content_css: '/styles/editor.css',
               content_style: "body {max-width: 600px; margin-left: auto; margin-right: auto;} h1 { font-size: 60pt; margin: 0, padding: 0; }",
+              
               branding: false,
               visualblocks_default_state: false,
               block_formats: 'Paragraph=p;Header 1=h1;Header 2=h2;Header 3=h3;Header 4=h4;Header 5=h5;Header 6=h6;',

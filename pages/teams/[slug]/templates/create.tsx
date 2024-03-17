@@ -122,6 +122,7 @@ const CreateTemplate = ({ apiKey }: { apiKey: string }) => {
         <div id="editor-window">
 
           <Editor
+            initialValue=""
             ref={editor}
             apiKey={apiKey}
             init={{
@@ -135,9 +136,12 @@ const CreateTemplate = ({ apiKey }: { apiKey: string }) => {
               },
 
               content_css: '/styles/editor.css',
+              content_style: "body {max-width: 600px; margin-left: auto; margin-right: auto;} h1 { font-size: 60pt; margin: 0, padding: 0; }",
+
               branding: false,
-              visualblocks_default_state: true,
+              visualblocks_default_state: false,
               block_formats: 'Paragraph=p;Header 1=h1;Header 2=h2;Header 3=h3;Header 4=h4;Header 5=h5;Header 6=h6;',
+              font_size_formats: '8pt 10pt 12pt 14pt 16pt 18pt 24pt 36pt 48pt 60pt',
 
               style_formats: [
                 { title: 'Containers', items: [
@@ -155,6 +159,11 @@ const CreateTemplate = ({ apiKey }: { apiKey: string }) => {
               plugins: 'anchor autolink autosave charmap codesample emoticons image link lists media searchreplace table visualblocks wordcount checklist mediaembed casechange export formatpainter pageembed linkchecker a11ychecker permanentpen powerpaste advtable advcode editimage advtemplate ai mentions tableofcontents footnotes mergetags autocorrect typography inlinecss',
               toolbar: 'undo redo | blocks fontfamily fontsize forecolor backcolor blockColor backgroundColor | bold italic underline strikethrough | link image media table mergetags | align lineheight | checklist numlist bullist indent outdent | emoticons charmap | removeformat output',
 
+              mergetags_list: [
+                { value: 'First.Name', title: 'First Name' },
+                { value: 'Email', title: 'Email' },
+              ],
+              ai_request: (request, respondWith) => respondWith.string(() => Promise.reject("See docs to implement AI Assistant")),
 
               setup: (editor) => {
                 // add body in elementpath
@@ -241,7 +250,6 @@ const CreateTemplate = ({ apiKey }: { apiKey: string }) => {
                       initialData: { color: '#ffffff' },
                       onSubmit: (api) => {
                         const data = api.getData();
-                        console.log('Color:', data.color);
                         // change color editor background
                         editor.getBody().style.backgroundColor = data.color;
                         api.close();
@@ -251,14 +259,7 @@ const CreateTemplate = ({ apiKey }: { apiKey: string }) => {
                 });
 
               },
-
-              mergetags_list: [
-                { value: 'First.Name', title: 'First Name' },
-                { value: 'Email', title: 'Email' },
-              ],
-              ai_request: (request, respondWith) => respondWith.string(() => Promise.reject("See docs to implement AI Assistant")),
             }}
-            initialValue=""
           />
         </div>
       </div>
