@@ -43,7 +43,10 @@ export default async function middleware(req: NextRequest) {
     });
 
     if (!token) {
-      return NextResponse.redirect(new URL('/auth/login'));
+      if (!req.nextUrl.pathname.startsWith('/auth')){
+        return NextResponse.next();
+      }
+      else return NextResponse.redirect(redirectUrl);
     }
   }
 
