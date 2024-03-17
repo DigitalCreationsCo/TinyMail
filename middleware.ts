@@ -43,7 +43,7 @@ export default async function middleware(req: NextRequest) {
     });
 
     if (!token) {
-      return NextResponse.redirect(redirectUrl);
+      return NextResponse.redirect(new URL('/auth/login'));
     }
   }
 
