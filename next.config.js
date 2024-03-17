@@ -59,9 +59,9 @@ const nextConfig = {
 
 // Additional config options for the Sentry webpack plugin.
 // For all available options: https://github.com/getsentry/sentry-webpack-plugin#options.
-const sentryWebpackPluginOptions = {
-  silent: true,
-};
+// const sentryWebpackPluginOptions = {
+//   silent: true,
+// };
 
 module.exports = nextConfig;
 // module.exports = withSentryConfig(nextConfig, sentryWebpackPluginOptions);
