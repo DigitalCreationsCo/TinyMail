@@ -31,7 +31,7 @@ export default async function handler(
   // Create a new template with the content from the request
   const handlePOST = async (req: NextApiRequest, res: NextApiResponse) => {
 
-    const { templateId, emailContent }: {
+    const { templateId, textColor = 'dark', emailContent }: {
       emailContent: {
         title: string;
         date: string;
@@ -60,6 +60,7 @@ export default async function handler(
         };
       };
       templateId: string;
+      textColor: 'light' | 'dark';
     } = req.body;
 
     let articles, stories, artStory;
@@ -92,8 +93,6 @@ export default async function handler(
     
     let content = wrapHTMLMarkup(template.content, template.backgroundColor);
 
-    const textColor = templateId === '9059e1d1-f9fb-483d-b3e0-5d983102b996' ? 'light' : 'dark';
-    
     try {
       content = addDateToHeader(content, emailContent.date)
       if (emailContent.introduction){
