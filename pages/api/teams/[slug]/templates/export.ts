@@ -324,13 +324,13 @@ export default async function handler(
     }
   }
   
-  function wrapArticleContent(title: string, body:string, imagesrc:string) {
-    return `<p style="text-align: center;"><span style="font-family: ${styles.paragraph['font-family']}; color: ${styles.paragraph.color}; font-size: ${styles.paragraph['font-size']};"><strong>${title}</strong></span></p><p><img style="display: block; margin-left: auto; margin-right: auto;" src=${imagesrc} alt=${title} width="100%" /></p><p><span style="text-align:center; "font-family: ${styles.paragraph['font-family']}; color: ${styles.paragraph.color}; font-size: ${styles.paragraph['font-size']};">${body}</span></p><p></p>`
-  }
+  // function wrapArticleContent(title: string, body:string, imagesrc:string) {
+  //   return `<p style="text-align: center;"><span style="font-family: ${styles.paragraph['font-family']}; color: ${styles.paragraph.color}; font-size: ${styles.paragraph['font-size']};"><strong>${title}</strong></span></p><p><img style="display: block; margin-left: auto; margin-right: auto;" src=${imagesrc} alt=${title} width="100%" /></p><p><span style="text-align:center; "font-family: ${styles.paragraph['font-family']}; color: ${styles.paragraph.color}; font-size: ${styles.paragraph['font-size']};">${body}</span></p><p></p>`
+  // }
   
-  function wrapStoryLinks(title: string, link:string) {
-    return `<p style="text-align: center;"><span style="font-family: ${styles.paragraph['font-family']}; color: ${styles.paragraph.color}; font-size: ${styles.paragraph['font-size']};"><strong><a style="font-family: ${styles.paragraph['font-family']}; color: ${styles.paragraph.color}; font-size: ${styles.paragraph['font-size']};" title=${title} href=${link} target="_blank" rel="noopener" aria-invalid="true">Cannabis Doctor recommends smoking weed every day</a></strong></span></p><p></p>`
-  }
+  // function wrapStoryLinks(title: string, link:string) {
+  //   return `<p style="text-align: center;"><span style="font-family: ${styles.paragraph['font-family']}; color: ${styles.paragraph.color}; font-size: ${styles.paragraph['font-size']};"><strong><a style="font-family: ${styles.paragraph['font-family']}; color: ${styles.paragraph.color}; font-size: ${styles.paragraph['font-size']};" title=${title} href=${link} target="_blank" rel="noopener" aria-invalid="true">Cannabis Doctor recommends smoking weed every day</a></strong></span></p><p></p>`
+  // }
 
   function wrapHTMLMarkup(markup: string, backgroundColor: string) {
     return `<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0"></head><body style="max-width: 600px; background-color: ${backgroundColor}; margin-left: auto; margin-right: auto; padding-top:20px;">${markup}</body></html>`

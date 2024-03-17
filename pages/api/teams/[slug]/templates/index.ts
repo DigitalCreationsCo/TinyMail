@@ -1,6 +1,5 @@
 import { prisma } from '@/lib/prisma';
 import { sendAudit } from '@/lib/retraced';
-import { sendEvent } from '@/lib/svix';
 import {
   throwIfNoTeamAccess,
 } from 'models/team';
@@ -88,7 +87,7 @@ const handleDELETE = async (req: NextApiRequest, res: NextApiResponse) => {
 
   const { templateId } = req.query as { templateId: string };
 
-  const templateRemoved = await deleteTemplate({id: templateId});
+  await deleteTemplate({id: templateId});
 
   // await sendEvent(teamMember.teamId, 'template.removed', templateRemoved);
 

@@ -12,7 +12,6 @@ import type { NextPageWithLayout } from 'types';
 import { authProviderEnabled } from '@/lib/auth';
 import { AuthLayout } from '@/components/layouts';
 import GithubButton from '@/components/auth/GithubButton';
-import GoogleButton from '@/components/auth/GoogleButton';
 import JoinWithInvitation from '@/components/auth/JoinWithInvitation';
 import Head from 'next/head';
 import { Loading } from '@/components/shared';

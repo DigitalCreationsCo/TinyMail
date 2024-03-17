@@ -178,7 +178,7 @@ const CreateTemplate = ({ apiKey }: { apiKey: string }) => {
 
                 editor.ui.registry.addButton('blockColor', {
                   icon: 'color-picker',
-                  onAction: (api) => {
+                  onAction: () => {
                     editor.windowManager.open({
                       title: 'Choose a color',
                       body: {
@@ -221,7 +221,7 @@ const CreateTemplate = ({ apiKey }: { apiKey: string }) => {
 
                 editor.ui.registry.addButton('backgroundColor', {
                   icon: 'cell-background-color',
-                  onAction: (api) => {
+                  onAction: () => {
                     editor.windowManager.open({
                       title: 'Choose a color',
                       body: {

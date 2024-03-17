@@ -6,7 +6,6 @@ import useTeam from 'hooks/useTeam';
 import type { GetServerSidePropsContext } from 'next';
 import { useTranslation } from 'next-i18next';
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
-import type { TeamFeature } from 'types';
 import { WithLoadingAndError } from '@/components/shared';
 import useCanAccess from 'hooks/useCanAccess';
 import Templates from '@/components/templates/Templates';
@@ -15,7 +14,7 @@ import type { ApiResponse } from 'types';
 import toast from 'react-hot-toast';
 import { Template } from '@prisma/client';
 
-const TemplatesPage = ({ teamFeatures }: { teamFeatures: TeamFeature }) => {
+const TemplatesPage = () => {
   const { t } = useTranslation('common');
   const { canAccess } = useCanAccess();
   const { team } = useTeam();

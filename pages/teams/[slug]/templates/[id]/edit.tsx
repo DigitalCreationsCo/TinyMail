@@ -7,7 +7,7 @@ import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
 import { Button } from 'react-daisyui';
 import { useRouter } from 'next/router';
 import { Editor } from '@tinymce/tinymce-react';
-import { useEffect, useRef, useState } from 'react';
+import { useRef, useState } from 'react';
 import { PencilIcon } from '@heroicons/react/24/outline';
 import { useFormik } from 'formik';
 import toast from 'react-hot-toast';
@@ -15,8 +15,6 @@ import * as Yup from 'yup';
 import html2canvas from 'html2canvas-pro';
 import { useSession } from 'next-auth/react';
 import type { ApiResponse } from 'types';
-import useSWR from 'swr';
-import fetcher from '@/lib/fetcher';
 import '@/styles/editor.module.css';
 
 import { defaultHeaders } from '@/lib/common';
@@ -186,7 +184,7 @@ const EditTemplate = ({ apiKey, template }: { apiKey: string; template: Template
 
                 editor.ui.registry.addButton('blockColor', {
                   icon: 'color-picker',
-                  onAction: (api) => {
+                  onAction: () => {
                     editor.windowManager.open({
                       title: 'Choose a color',
                       body: {
@@ -229,7 +227,7 @@ const EditTemplate = ({ apiKey, template }: { apiKey: string; template: Template
 
                 editor.ui.registry.addButton('backgroundColor', {
                   icon: 'cell-background-color',
-                  onAction: (api) => {
+                  onAction: () => {
                     editor.windowManager.open({
                       title: 'Choose a color',
                       body: {

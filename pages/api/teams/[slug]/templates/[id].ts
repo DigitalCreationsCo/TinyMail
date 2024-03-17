@@ -1,13 +1,10 @@
-import { prisma } from '@/lib/prisma';
-import { sendAudit } from '@/lib/retraced';
-import { sendEvent } from '@/lib/svix';
 import {
   throwIfNoTeamAccess,
 } from 'models/team';
 import { throwIfNotAllowed } from 'models/user';
 import type { NextApiRequest, NextApiResponse } from 'next';
 import { recordMetric } from '@/lib/metrics';
-import { createTemplate, deleteTemplate, getTeamTemplates, getTemplate } from 'models/template';
+import { deleteTemplate, getTemplate } from 'models/template';
 
 export default async function handler(
   req: NextApiRequest,
@@ -61,7 +58,7 @@ const handleGET = async (req: NextApiRequest, res: NextApiResponse) => {
 // Delete a template from the team
 const handleDELETE = async (req: NextApiRequest, res: NextApiResponse) => {
 
-  const templateRemoved = await deleteTemplate({id: req.query.id as string});
+  await deleteTemplate({id: req.query.id as string});
 
   recordMetric('template.removed');
 
