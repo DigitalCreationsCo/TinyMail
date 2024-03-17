@@ -99,12 +99,15 @@ const Login: NextPageWithLayout<
     },
   });
 
+
+  useEffect(() => {
+    if (status === 'authenticated') {
+      router.push(redirectUrl);
+    }
+  }, [status, router, redirectUrl])
+
   if (status === 'loading') {
     return <Loading />;
-  }
-
-  if (status === 'authenticated') {
-    router.push(redirectUrl);
   }
 
   const params = token ? `?token=${token}` : '';

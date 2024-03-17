@@ -28,6 +28,8 @@ export default async function middleware(req: NextRequest) {
 
   // Bypass routes that don't require authentication
   if (micromatch.isMatch(pathname, unAuthenticatedRoutes)) {
+    console.info('Bypassing authentication for', pathname)
+    console.info(micromatch.isMatch(pathname, unAuthenticatedRoutes));
     return NextResponse.next();
   }
 
