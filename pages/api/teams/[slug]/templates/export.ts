@@ -146,6 +146,7 @@ export default async function handler(
       if (header) {
         header.style.fontSize='60pt';
         header.style.wordBreak='break-all';
+        header.style.fontFamily=styles.paragraph['font-family'];
         header.innerHTML = updateInnerHTMLText(header.innerHTML, (date.toUpperCase() + ' ' + header.textContent).replace(" ", ""))
       }
       return doc.body.outerHTML;
