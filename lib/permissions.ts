@@ -12,7 +12,9 @@ export type Resource =
   | 'team_webhook'
   | 'team_payments'
   | 'team_api_key'
-  | 'team_templates';
+  | 'team_integrations'
+  | 'team_templates'
+  | 'team_emails';
 
 export type RolePermissions = {
   [role in RoleType]: Permission[];
@@ -77,7 +79,15 @@ export const permissions: RolePermissions = {
       actions: '*',
     },
     {
+      resource: 'team_integrations',
+      actions: '*',
+    },
+    {
       resource: 'team_templates',
+      actions: '*',
+    },
+    {
+      resource: 'team_emails',
       actions: '*',
     },
   ],
@@ -115,7 +125,15 @@ export const permissions: RolePermissions = {
       actions: '*',
     },
     {
+      resource: 'team_integrations',
+      actions: '*',
+    },
+    {
       resource: 'team_templates',
+      actions: '*',
+    },
+    {
+      resource: 'team_emails',
       actions: '*',
     },
   ],
@@ -125,7 +143,15 @@ export const permissions: RolePermissions = {
       actions: ['read', 'leave'],
     },
     {
+      resource: 'team_integrations',
+      actions: ['read'],
+    },
+    {
       resource: 'team_templates',
+      actions: '*',
+    },
+    {
+      resource: 'team_emails',
       actions: '*',
     },
   ],

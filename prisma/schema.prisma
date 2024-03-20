@@ -63,8 +63,10 @@ model User {
   updatedAt              DateTime  @default(now())
   invalid_login_attempts Int       @default(0)
   lockedAt               DateTime?
+  mailchimpApiKey        String?
 
-  templates Template[]
+  templates      Template[]
+  emails         Email[]
   teamMembers TeamMember[]
   accounts    Account[]
   sessions    Session[]
@@ -84,6 +86,7 @@ model Team {
   members         TeamMember[]
 
   templates      Template[]
+  emails         Email[]
   invitations     Invitation[]
   apiKeys         ApiKey[]
 }
@@ -187,6 +190,24 @@ model Price {
 }
 
 model Template {
+  id          String   @id @default(uuid())
+  title       String
+  description String
+  image       String?
+  content     String
+  backgroundColor String
+
+  teamId      String
+  authorId    String
+
+  team Team @relation(fields: [teamId], references: [id], onDelete: Cascade)
+  author User @relation(fields: [authorId], references: [id], onDelete: Cascade)
+
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @default(now())
+}
+
+model Email {
   id          String   @id @default(uuid())
   title       String
   description String

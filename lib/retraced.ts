@@ -23,8 +23,14 @@ export type EventType =
   | 'team.delete'
   | 'template.create'
   | 'template.update'
-  | 'template.remove';
-
+  | 'template.remove'
+  | 'email.create'
+  | 'email.update'
+  | 'email.remove'
+  | 'integration.mailchimp.create'
+  | 'integration.mailchimp.delete'
+  | 'integration.mailchimp.update';
+  
 type Request = {
   action: EventType;
   user: User;

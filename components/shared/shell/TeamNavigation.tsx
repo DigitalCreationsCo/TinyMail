@@ -1,4 +1,4 @@
-import { Cog6ToothIcon, EnvelopeIcon } from '@heroicons/react/24/outline';
+import { Cog6ToothIcon, EnvelopeIcon, EnvelopeOpenIcon } from '@heroicons/react/24/outline';
 import { useTranslation } from 'next-i18next';
 import NavigationItems from './NavigationItems';
 import { NavigationProps, MenuItem } from './NavigationItems';
@@ -18,11 +18,17 @@ const TeamNavigation = ({ slug, activePathname }: NavigationItemsProps) => {
       active: activePathname === `/teams/${slug}/templates`,
     },
     {
+      name: t('emails'),
+      href: `/teams/${slug}/emails`,
+      icon: EnvelopeOpenIcon,
+      active: activePathname === `/teams/${slug}/emails`,
+    },
+    {
       name: t('settings'),
       href: `/teams/${slug}/settings`,
       icon: Cog6ToothIcon,
       active:
-        activePathname?.startsWith(`/teams/${slug}`) &&
+        activePathname?.startsWith(`/teams/${slug}/settings`) &&
         !activePathname.includes('products'),
     },
   ];

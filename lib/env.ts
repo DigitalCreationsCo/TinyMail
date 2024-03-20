@@ -95,6 +95,7 @@ const env = {
     dsync: process.env.FEATURE_TEAM_DSYNC === 'false' ? false : true,
     webhook: process.env.FEATURE_TEAM_WEBHOOK === 'false' ? false : true,
     apiKey: process.env.FEATURE_TEAM_API_KEY === 'false' ? false : true,
+    integrations: process.env.FEATURE_TEAM_INTEGRATIONS === 'false' ? false : true,
     auditLog: process.env.FEATURE_TEAM_AUDIT_LOG === 'false' ? false : true,
     payments:
       process.env.FEATURE_TEAM_PAYMENTS === 'false'

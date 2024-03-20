@@ -1,6 +1,6 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 import { recordMetric } from '@/lib/metrics';
-import { createTemplate, getTemplate } from 'models/template';
+import { createEmail, getEmail } from 'models/template';
 import jsdom from 'jsdom'
 
 export default async function handler(
@@ -83,10 +83,10 @@ export default async function handler(
       throw new Error('Articles are required');
     }
 
-    const template = await getTemplate({id: templateId as string});
+    const template = await getEmail({id: templateId as string});
 
     if (!template) {
-      throw new Error('Template not found');
+      throw new Error('Email not found');
     }
 
     recordMetric('template.fetched');
@@ -100,27 +100,27 @@ export default async function handler(
       }
 
       for (let i = 0; i < emailContent.articles.length; i++) {
-        content = addArticleToTemplate(content, emailContent.articles[i], textColor)
+        content = addArticleToEmail(content, emailContent.articles[i], textColor)
       }
 
       if (emailContent.stories && emailContent.stories.length){
         for (let i = 0; i < emailContent.stories.length; i++) {
-          content = addLinkToTemplate(content, emailContent.stories[i], textColor)
+          content = addLinkToEmail(content, emailContent.stories[i], textColor)
         }
       }
 
       if (emailContent.artStory){
-        content = addArtStoryToTemplate(content, emailContent.artStory, textColor)
+        content = addArtStoryToEmail(content, emailContent.artStory, textColor)
       }
 
-      content = addCompanyUpdateToTemplate(content, emailContent.update, textColor)
+      content = addCompanyUpdateToEmail(content, emailContent.update, textColor)
     }
 
     catch (error: any) {
       throw new Error(error.message);
     }
 
-    const templateCreated = await createTemplate({
+    const templateCreated = await createEmail({
       teamId: template.teamId,
       title: emailContent.title,
       content: content,
@@ -177,7 +177,7 @@ export default async function handler(
     }
   }
 
-  function addArticleToTemplate(markup: string, content: { title: string, body: string, image: string, selector: string }, textColor: 'light' | 'dark'):string {
+  function addArticleToEmail(markup: string, content: { title: string, body: string, image: string, selector: string }, textColor: 'light' | 'dark'):string {
     try {
       const doc = getDocumentFromMarkup(markup)
       const articleSection = doc.getElementsByTagName(content.selector)[0]
@@ -218,7 +218,7 @@ export default async function handler(
     }
   }
   
-  function addLinkToTemplate(markup: string, content: { title: string, link: string, selector: string }, textColor: 'light' | 'dark') {
+  function addLinkToEmail(markup: string, content: { title: string, link: string, selector: string }, textColor: 'light' | 'dark') {
     try {
       const doc = getDocumentFromMarkup(markup)
 
@@ -244,7 +244,7 @@ export default async function handler(
     }
   }
 
-  function addArtStoryToTemplate(markup: string, content: { title: string, body: string, link: string, image: string, selector: string }, textColor: 'light' | 'dark'):string {
+  function addArtStoryToEmail(markup: string, content: { title: string, body: string, link: string, image: string, selector: string }, textColor: 'light' | 'dark'):string {
     try {
       const doc = getDocumentFromMarkup(markup)
       const articleSection = doc.getElementsByTagName(content.selector)[1]
@@ -285,7 +285,7 @@ export default async function handler(
     }
   }
 
-  function addCompanyUpdateToTemplate (markup: string, content: { essay: string, selector: string }, textColor: 'light' | 'dark') {
+  function addCompanyUpdateToEmail (markup: string, content: { essay: string, selector: string }, textColor: 'light' | 'dark') {
     try {
       const doc = getDocumentFromMarkup(markup)
       const essayParagraph = doc.createElement('p')

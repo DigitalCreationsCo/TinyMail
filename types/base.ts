@@ -54,6 +54,10 @@ export type AppEvent =
   | 'template.updated'
   | 'template.removed'
   | 'template.fetched'
+  | 'email.created'
+  | 'email.updated'
+  | 'email.removed'
+  | 'email.fetched'
   | 'apikey.created'
   | 'apikey.removed'
   | 'apikey.fetched'
@@ -61,7 +65,12 @@ export type AppEvent =
   | 'webhook.created'
   | 'webhook.removed'
   | 'webhook.fetched'
-  | 'webhook.updated';
+  | 'webhook.updated'
+  | 'integration.created'
+  | 'integration.removed'
+  | 'integration.fetched'
+  | 'integration.updated'
+  ;
 
 export type AUTH_PROVIDER =
   | 'github'
@@ -78,5 +87,6 @@ export interface TeamFeature {
   webhook: boolean;
   apiKey: boolean;
   payments: boolean;
+  integrations: boolean;
   deleteTeam: boolean;
 }

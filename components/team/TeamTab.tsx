@@ -113,6 +113,18 @@ const TeamTab = ({ activeTab, team, heading, teamFeatures }: TeamTabProps) => {
     });
   }
 
+  if (
+    teamFeatures.integrations &&
+    canAccess('team_integrations', ['create', 'update', 'read', 'delete'])
+  ) {
+    navigations.push({
+      name: 'Integrations',
+      href: `/teams/${team.slug}/integrations`,
+      active: activeTab === 'integrations',
+      icon: KeyIcon,
+    });
+  }
+  
   return (
     <div className="flex flex-col pb-6">
       <h2 className="text-xl font-semibold mb-2">
