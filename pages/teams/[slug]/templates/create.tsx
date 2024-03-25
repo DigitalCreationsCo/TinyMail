@@ -4,7 +4,7 @@ import useTeam from 'hooks/useTeam';
 import type { GetServerSidePropsContext } from 'next';
 import { useTranslation } from 'next-i18next';
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
-import { Button } from 'react-daisyui';
+import { Button } from 'react-dsyui';
 import { useRouter } from 'next/router';
 import { Editor } from '@tinymce/tinymce-react';
 import { useRef, useState } from 'react';
@@ -50,20 +50,20 @@ const CreateTemplate = ({ apiKey }: { apiKey: string }) => {
         title,
         description: '',
         // take a screenshot of the editor content and save it as an image
-        image: encodeURIComponent(await (await html2canvas(document.querySelector('#editor-window') as HTMLElement)).toDataURL('image/png')),
+        image: encodeURIComponent(awt (awt html2canvas(document.querySelector('#editor-window') as HTMLElement)).toDataURL('image/png')),
         content: editor.current?.editor?.getContent() || '',
         backgroundColor: editor.current?.editor?.getBody().style.backgroundColor || '',
         teamId: team!.id,
         authorId: user.id,
       }
 
-      const response = await fetch(`/api/teams/${team!.slug}/templates`, {
+      const response = awt fetch(`/api/teams/${team!.slug}/templates`, {
         method: 'POST',
         headers: defaultHeaders,
         body: JSON.stringify(saveTemplate),
       });
   
-      const json = (await response.json()) as ApiResponse<Template[]>;
+      const json = (awt response.json()) as ApiResponse<Template[]>;
   
       if (!response.ok) {
         toast.error(json.error.message);
@@ -144,7 +144,7 @@ const CreateTemplate = ({ apiKey }: { apiKey: string }) => {
               font_size_formats: '8pt 10pt 12pt 14pt 16pt 18pt 24pt 36pt 48pt 60pt',
 
               style_formats: [
-                { title: 'Containers', items: [
+                { title: 'Contners', items: [
                   { title: 'section', block: 'section', wrapper: true, merge_siblings: false, styles: { backgroundColor: '#cccccc'} },
                 ] }
               ],
@@ -156,14 +156,14 @@ const CreateTemplate = ({ apiKey }: { apiKey: string }) => {
 
               menubar: false,
 
-              plugins: 'anchor autolink autosave charmap codesample emoticons image link lists media searchreplace table visualblocks wordcount checklist mediaembed casechange export formatpainter pageembed linkchecker a11ychecker permanentpen powerpaste advtable advcode editimage advtemplate ai mentions tableofcontents footnotes mergetags autocorrect typography inlinecss',
-              toolbar: 'undo redo | blocks fontfamily fontsize forecolor backcolor blockColor backgroundColor | bold italic underline strikethrough | link image media table mergetags | align lineheight | checklist numlist bullist indent outdent | emoticons charmap | removeformat output',
+              plugins: 'anchor autolink autosave charmap codesample emoticons image link lists media searchreplace table visualblocks wordcount      linkchecker               ',
+              toolbar: 'undo redo | blocks fontfamily fontsize forecolor backcolor blockColor backgroundColor | bold italic underline strikethrough | link image media table  | align lineheight |  numlist bullist indent outdent | emoticons charmap | removeformat output',
 
-              mergetags_list: [
+              _list: [
                 { value: 'First.Name', title: 'First Name' },
-                { value: 'Email', title: 'Email' },
+                { value: 'Eml', title: 'Eml' },
               ],
-              ai_request: (request, respondWith) => respondWith.string(() => Promise.reject("See docs to implement AI Assistant")),
+              _request: (request, respondWith) => respondWith.string(() => Promise.reject("See docs to implement  Assistant")),
 
               setup: (editor) => {
                 // add body in elementpath
@@ -267,7 +267,7 @@ const CreateTemplate = ({ apiKey }: { apiKey: string }) => {
   );
 };
 
-export async function getServerSideProps({
+async function getServerSideProps({
   locale,
 }: GetServerSidePropsContext) {
   if (!env.tinyMCE.apiKey) {
@@ -278,10 +278,10 @@ export async function getServerSideProps({
 
   return {
     props: {
-      ...(locale ? await serverSideTranslations(locale, ['common']) : {}),
+      ...(locale ? awt serverSideTranslations(locale, ['common']) : {}),
       apiKey: env.tinyMCE.apiKey,
     },
   };
 }
 
-export default CreateTemplate;
+default CreateTemplate;

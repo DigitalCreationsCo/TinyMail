@@ -13,7 +13,7 @@ You haven't connected any content source. > Connect Contact Source
 
     1. update TinyMCE editor to add id attributes to elements, make the element ids visible for the user.
     2. map content source fields to template ids to populate the template.
-    3. generate the template. allow to select color, font-family, etc, save preferences in the template
+    3. generate the tempElate. allow to select color, font-family, etc, save preferences in the template
     4. content can be stacked to an element to create an array of content ( multiple stories, articles, posts, etc )
     5. set up a chron job on vercel to run these user scheduled jobs
     6. test stripe payments
