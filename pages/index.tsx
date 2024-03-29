@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { type ReactElement } from 'react';
+import { PropsWithChildren, type ReactElement } from 'react';
 import { useTranslation } from 'next-i18next';
 import type { NextPageWithLayout } from 'types';
 import { GetServerSidePropsContext } from 'next';
@@ -22,7 +22,6 @@ const Home: NextPageWithLayout = () => {
       <Head>
         <title>{t('homepage-title')}</title>
       </Head>
-
       <div className="container mx-auto">
         <div className="navbar bg-base-100 px-0 sm:px-1">
           <div className="flex-1">

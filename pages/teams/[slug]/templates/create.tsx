@@ -4,7 +4,7 @@ import useTeam from 'hooks/useTeam';
 import type { GetServerSidePropsContext } from 'next';
 import { useTranslation } from 'next-i18next';
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
-import { Button } from 'react-dsyui';
+import { Button } from 'react-daisyui';
 import { useRouter } from 'next/router';
 import { Editor } from '@tinymce/tinymce-react';
 import { useRef, useState } from 'react';
@@ -40,7 +40,7 @@ const CreateTemplate = ({ apiKey }: { apiKey: string }) => {
       title,
       description: '',
       image: '',
-      content: '',
+      doc: '',
       teamId: '',
       authorId: '',
     },
@@ -50,20 +50,20 @@ const CreateTemplate = ({ apiKey }: { apiKey: string }) => {
         title,
         description: '',
         // take a screenshot of the editor content and save it as an image
-        image: encodeURIComponent(awt (awt html2canvas(document.querySelector('#editor-window') as HTMLElement)).toDataURL('image/png')),
-        content: editor.current?.editor?.getContent() || '',
+        image: encodeURIComponent(await (await html2canvas(document.querySelector('#editor-window') as HTMLElement)).toDataURL('image/png')),
+        doc: editor.current?.editor?.getContent() || '',
         backgroundColor: editor.current?.editor?.getBody().style.backgroundColor || '',
         teamId: team!.id,
         authorId: user.id,
       }
 
-      const response = awt fetch(`/api/teams/${team!.slug}/templates`, {
+      const response = await fetch(`/api/teams/${team!.slug}/templates`, {
         method: 'POST',
         headers: defaultHeaders,
         body: JSON.stringify(saveTemplate),
       });
   
-      const json = (awt response.json()) as ApiResponse<Template[]>;
+      const json = (await response.json()) as ApiResponse<Template[]>;
   
       if (!response.ok) {
         toast.error(json.error.message);
@@ -171,8 +171,8 @@ const CreateTemplate = ({ apiKey }: { apiKey: string }) => {
                   text: 'Output',
                   onAction: () => {
                     // getall document nodes, output to the console
-                    const content = editor.getContent();
-                    console.log('Content: ', content)
+                    const doc = editor.getContent();
+                    console.log('doc: ', doc)
                   },
                 });
 
@@ -267,7 +267,7 @@ const CreateTemplate = ({ apiKey }: { apiKey: string }) => {
   );
 };
 
-async function getServerSideProps({
+export async function getServerSideProps({
   locale,
 }: GetServerSidePropsContext) {
   if (!env.tinyMCE.apiKey) {
@@ -278,10 +278,10 @@ async function getServerSideProps({
 
   return {
     props: {
-      ...(locale ? awt serverSideTranslations(locale, ['common']) : {}),
+      ...(locale ? await serverSideTranslations(locale, ['common']) : {}),
       apiKey: env.tinyMCE.apiKey,
     },
   };
 }
 
-default CreateTemplate;
+export default CreateTemplate;

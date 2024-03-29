@@ -2,13 +2,13 @@ import { prisma } from '@/lib/prisma';
 import { Prisma } from '@prisma/client';
 
 export const createEmail = async (param: Prisma.EmailCreateArgs['data']) => {
-  const { title, description = "", backgroundColor = "", content, image = "", authorId = '', teamId = '' } = param;
+  const { title, description = "", backgroundColor = "", doc, image = "", authorId = '', teamId = '' } = param;
 
   return await prisma.email.create({
     data: {
       title,
       description,
-      content,
+      doc,
       authorId,
       backgroundColor,
       teamId,

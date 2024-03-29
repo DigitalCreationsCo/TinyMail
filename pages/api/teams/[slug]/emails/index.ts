@@ -59,10 +59,10 @@ const handlePOST = async (req: NextApiRequest, res: NextApiResponse) => {
   const teamMember = await throwIfNoTeamAccess(req, res);
   throwIfNotAllowed(teamMember, 'team_emails', 'create');
 
-  const { title, description, content, backgroundColor, image } = req.body as { title: string; description: string; backgroundColor: string; content: string; image: string };
+  const { title, description, doc, backgroundColor, image } = req.body as { title: string; description: string; backgroundColor: string; doc: string; image: string };
 
   const emailCreated = await createEmail({
-    title, description, content, image, backgroundColor, teamId: teamMember.team.id, authorId: teamMember.user.id,
+    title, description, doc, image, backgroundColor, teamId: teamMember.team.id, authorId: teamMember.user.id,
   });
 
   sendAudit({
@@ -93,7 +93,7 @@ const handlePATCH = async (req: NextApiRequest, res: NextApiResponse) => {
   const teamMember = await throwIfNoTeamAccess(req, res);
   throwIfNotAllowed(teamMember, 'team_emails', 'update');
 
-  const { id, title, description, content, backgroundColor, image } = req.body as { title: string, description: string, content: string, image: string, id: string, backgroundColor: string};
+  const { id, title, description, doc, backgroundColor, image } = req.body as { title: string, description: string, doc: string, image: string, id: string, backgroundColor: string};
 
   const emailUpdated = await prisma.email.update({
     where: {
@@ -102,7 +102,7 @@ const handlePATCH = async (req: NextApiRequest, res: NextApiResponse) => {
     data: {
       title,
       description,
-      content,
+      doc,
       backgroundColor,
       image,
     },

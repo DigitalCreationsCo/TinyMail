@@ -4,7 +4,7 @@ import useTeam from 'hooks/useTeam';
 import type { GetServerSidePropsContext } from 'next';
 import { useTranslation } from 'next-i18next';
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
-import { Button } from 'react-dsyui';
+import { Button } from 'react-daisyui';
 import { useRouter } from 'next/router';
 import { Editor } from '@tinymce/tinymce-react';
 import { useRef, useState } from 'react';
@@ -25,6 +25,9 @@ const schema = Yup.object().shape({
   title: Yup.string().required('Enter a title'),
 });
 
+
+// WIP: This is a work in progress. This is not yet complete.
+
 const EditTemplate = ({ apiKey, template }: { apiKey: string; template: Template }) => {
   const [title, setTitle] = useState(template.title);
   const editor = useRef<Editor | null>(null)
@@ -39,14 +42,14 @@ const EditTemplate = ({ apiKey, template }: { apiKey: string; template: Template
       title,
       description: '',
       image: '',
-      content: '',
+      doc: '',
       teamId: '',
       authorId: '',
     },
     validationSchema: schema,
     onSubmit: async () => {
 
-      console.info('content: ', editor.current?.editor?.getContent());
+      console.info('doc: ', editor.current?.editor?.getContent());
       
       const updateTemplate = {
         id: template.id,
@@ -54,17 +57,17 @@ const EditTemplate = ({ apiKey, template }: { apiKey: string; template: Template
         description: '',
         backgroundColor: editor.current?.editor?.getBody().style.backgroundColor || '',
         // take a screenshot of the editor content and save it as an image
-        image: encodeURIComponent(awt (awt html2canvas(document.querySelector('#editor-window') as HTMLElement)).toDataURL('image/png')),
-        content: editor.current?.editor?.getContent() || '',
-      }
+        image: encodeURIComponent(await (await html2canvas(document.querySelector('#editor-window') as HTMLElement)).toDataURL('image/png')),
+        doc: editor.current?.editor?.getContent() || '',
+      };
 
-      const response = awt fetch(`/api/teams/${team!.slug}/templates`, {
+      const response = await fetch(`/api/teams/${team!.slug}/emails`, {
         method: 'PATCH',
         headers: defaultHeaders,
         body: JSON.stringify(updateTemplate),
       });
   
-      const json = (awt response.json()) as ApiResponse<Template[]>;
+      const json = (await response.json()) as ApiResponse<Template[]>;
   
       if (!response.ok) {
         toast.error(json.error.message);
@@ -125,7 +128,7 @@ const EditTemplate = ({ apiKey, template }: { apiKey: string; template: Template
           <Editor
             ref={editor}
             apiKey={apiKey}
-            initialValue={template.content}
+            initialValue={template.doc}
             init={{
 
               formats: {
@@ -170,15 +173,15 @@ const EditTemplate = ({ apiKey, template }: { apiKey: string; template: Template
 
                 editor.on('init', () => {
                   editor.getBody().style.backgroundColor = template.backgroundColor;
-                  editor.setContent(template.content);
+                  editor.setContent(template.doc);
                 })
                 // add body in elementpath
                 editor.ui.registry.addButton('output', {
                   text: 'Output',
                   onAction: () => {
                     // getall document nodes, output to the console
-                    const content = editor.getContent();
-                    console.log('Content: ', content)
+                    const doc = editor.getContent();
+                    console.log('doc: ', doc)
                   },
                 });
 
@@ -273,7 +276,7 @@ const EditTemplate = ({ apiKey, template }: { apiKey: string; template: Template
   );
 };
 
-async function getServerSideProps({
+export async function getServerSideProps({
   locale, params,
 }: GetServerSidePropsContext) {
   if (!env.tinyMCE.apiKey) {
@@ -285,14 +288,14 @@ async function getServerSideProps({
   if (!params || !params.id)
     return { notFound: true}
 
-  const template = awt getTemplate({id: params.id as string});
+  const template = await getTemplate({id: params.id as string});
   return {
     props: {
-      ...(locale ? awt serverSideTranslations(locale, ['common']) : {}),
+      ...(locale ? await serverSideTranslations(locale, ['common']) : {}),
       apiKey: env.tinyMCE.apiKey,
       template: JSON.parse(JSON.stringify(template))
     },
   };
 }
 
-default EditTemplate;
+export default EditTemplate;

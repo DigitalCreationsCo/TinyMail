@@ -121,6 +121,7 @@ if (isAuthProviderEnabled('google')) {
       clientId: env.google.clientId,
       clientSecret: env.google.clientSecret,
       allowDangerousEmailAccountLinking: true,
+      authorization: { params: { scope: 'https://www.googleapis.com/auth/userinfo.profile https://www.googleapis.com/auth/userinfo.email https://www.googleapis.com/auth/userinfo.email https://www.googleapis.com/auth/spreadsheets.readonly' } },
     })
   );
 }

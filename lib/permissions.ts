@@ -14,7 +14,8 @@ export type Resource =
   | 'team_api_key'
   | 'team_integrations'
   | 'team_templates'
-  | 'team_emails';
+  | 'team_emails'
+  | 'team_content';
 
 export type RolePermissions = {
   [role in RoleType]: Permission[];
@@ -90,6 +91,10 @@ export const permissions: RolePermissions = {
       resource: 'team_emails',
       actions: '*',
     },
+    {
+      resource: 'team_content',
+      actions: '*',
+    },
   ],
   ADMIN: [
     {
@@ -136,6 +141,10 @@ export const permissions: RolePermissions = {
       resource: 'team_emails',
       actions: '*',
     },
+    {
+      resource: 'team_content',
+      actions: '*',
+    },
   ],
   MEMBER: [
     {
@@ -152,6 +161,10 @@ export const permissions: RolePermissions = {
     },
     {
       resource: 'team_emails',
+      actions: '*',
+    },
+    {
+      resource: 'team_content',
       actions: '*',
     },
   ],

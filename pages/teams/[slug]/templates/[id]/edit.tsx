@@ -39,14 +39,14 @@ const EditTemplate = ({ apiKey, template }: { apiKey: string; template: Template
       title,
       description: '',
       image: '',
-      content: '',
+      doc: '',
       teamId: '',
       authorId: '',
     },
     validationSchema: schema,
     onSubmit: async () => {
 
-      console.info('content: ', editor.current?.editor?.getContent());
+      console.info('doc: ', editor.current?.editor?.getContent());
       
       const updateTemplate = {
         id: template.id,
@@ -54,17 +54,17 @@ const EditTemplate = ({ apiKey, template }: { apiKey: string; template: Template
         description: '',
         backgroundColor: editor.current?.editor?.getBody().style.backgroundColor || '',
         // take a screenshot of the editor content and save it as an image
-        image: encodeURIComponent(awt (awt html2canvas(document.querySelector('#editor-window') as HTMLElement)).toDataURL('image/png')),
-        content: editor.current?.editor?.getContent() || '',
+        image: encodeURIComponent(await (await html2canvas(document.querySelector('#editor-window') as HTMLElement)).toDataURL('image/png')),
+        doc: editor.current?.editor?.getContent() || '',
       }
 
-      const response = awt fetch(`/api/teams/${team!.slug}/templates`, {
+      const response = await fetch(`/api/teams/${team!.slug}/templates`, {
         method: 'PATCH',
         headers: defaultHeaders,
         body: JSON.stringify(updateTemplate),
       });
   
-      const json = (awt response.json()) as ApiResponse<Template[]>;
+      const json = (await response.json()) as ApiResponse<Template[]>;
   
       if (!response.ok) {
         toast.error(json.error.message);
@@ -125,7 +125,7 @@ const EditTemplate = ({ apiKey, template }: { apiKey: string; template: Template
           <Editor
             ref={editor}
             apiKey={apiKey}
-            initialValue={template.content}
+            initialValue={template.doc}
             init={{
 
               formats: {
@@ -170,15 +170,15 @@ const EditTemplate = ({ apiKey, template }: { apiKey: string; template: Template
 
                 editor.on('init', () => {
                   editor.getBody().style.backgroundColor = template.backgroundColor;
-                  editor.setContent(template.content);
+                  editor.setContent(template.doc);
                 })
                 // add body in elementpath
                 editor.ui.registry.addButton('output', {
                   text: 'Output',
                   onAction: () => {
                     // getall document nodes, output to the console
-                    const content = editor.getContent();
-                    console.log('Content: ', content)
+                    const doc = editor.getContent();
+                    console.log('doc: ', doc)
                   },
                 });
 

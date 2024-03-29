@@ -5,6 +5,7 @@ interface ModalProps {
   open: boolean;
   close: () => void;
   children: React.ReactNode;
+  className?: string;
 }
 
 interface BodyProps {
@@ -12,11 +13,11 @@ interface BodyProps {
   className?: string;
 }
 
-const Modal = ({ open, close, children }: ModalProps) => {
+const Modal = ({ open, close, children, className }: ModalProps) => {
   const { t } = useTranslation('common');
 
   return (
-    <DModal open={open}>
+    <DModal open={open} className={className}>
       <Button
         type="button"
         size="sm"

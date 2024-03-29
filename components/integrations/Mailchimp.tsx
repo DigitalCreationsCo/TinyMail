@@ -87,7 +87,10 @@ const Mailchimp = ({ team, user, apiKey: _key }: MailchimpProps) => {
         apiKey={apiKey}
         setApiKey={setApiKey}
         visible={askConfirmation}
-        onCancel={() => setAskConfirmation(false)}
+        onCancel={() => {
+          setAskConfirmation(false);
+          setApiKey(_key);
+        }}
         onConfirm={connectMailChimp}
       />
     </>

@@ -12,6 +12,7 @@ import type { NextPageWithLayout } from 'types';
 import { authProviderEnabled } from '@/lib/auth';
 import { AuthLayout } from '@/components/layouts';
 import GithubButton from '@/components/auth/GithubButton';
+import GoogleButton from '@/components/auth/GoogleButton';
 import JoinWithInvitation from '@/components/auth/JoinWithInvitation';
 import Head from 'next/head';
 import { Loading } from '@/components/shared';
@@ -53,7 +54,7 @@ const Signup: NextPageWithLayout<
       <div className="rounded p-6 border">
         <div className="flex gap-2 flex-wrap">
           {authProviders.github && <GithubButton />}
-          {/* {authProviders.google && <GoogleButton />} */}
+          {authProviders.google && <GoogleButton />}
         </div>
 
         {(authProviders.github || authProviders.google) &&
