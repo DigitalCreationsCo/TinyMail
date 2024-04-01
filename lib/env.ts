@@ -37,6 +37,7 @@ const env = {
   google: {
     clientId: `${process.env.GOOGLE_CLIENT_ID}`,
     clientSecret: `${process.env.GOOGLE_CLIENT_SECRET}`,
+    sheetsApiKey: `${process.env.GOOGLE_SHEETS_API_KEY}`,
   },
 
   // Retraced configuration

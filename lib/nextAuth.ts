@@ -33,6 +33,7 @@ import {
 } from '@/lib/accountLock';
 import { slackNotify } from './slack';
 import { forceConsume } from './common';
+import { getGoogleProvider } from './googleAuthClient';
 
 const adapter = PrismaAdapter(prisma);
 const providers: Provider[] = [];
@@ -117,12 +118,7 @@ if (isAuthProviderEnabled('github')) {
 
 if (isAuthProviderEnabled('google')) {
   providers.push(
-    GoogleProvider({
-      clientId: env.google.clientId,
-      clientSecret: env.google.clientSecret,
-      allowDangerousEmailAccountLinking: true,
-      authorization: { params: { scope: 'https://www.googleapis.com/auth/userinfo.profile https://www.googleapis.com/auth/userinfo.email https://www.googleapis.com/auth/userinfo.email https://www.googleapis.com/auth/spreadsheets.readonly' } },
-    })
+    getGoogleProvider()
   );
 }
 

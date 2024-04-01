@@ -89,6 +89,7 @@ const Contents = ({ contents, team, removeContent }: ContentProps) => {
       >
         {t('remove-content-confirmation')}
       </ConfirmationDialog>
+      
       <ConnectContentDialog
         confirmText={t('connect-content')}
         visible={openConnectContentDialog}

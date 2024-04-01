@@ -11,8 +11,7 @@ export default function GoogleSheetConnect() {
   const [sheet, setSheet] = useState(null);
 
 
-  // function connectGoogleSheet
-    const connectGoogleSheet = async () => {
+  async function connectGoogleSheet () {
         if (!sheetId) {
             toast.error(t('google-sheet-id-required'));
             return;
@@ -20,6 +19,7 @@ export default function GoogleSheetConnect() {
 
         const response = await fetch(`/api/google-sheets/${sheetId}`);
 
+        console.info('connectGoogleSheet response', response);
         if (!response.ok) {
             const json = (await response.json()) as ApiResponse;
             toast.error(json.error.message);

@@ -10,6 +10,7 @@ import { sessionTokenCookieName } from '@/lib/nextAuth';
 import * as sheetsApi from '@googleapis/sheets';
 import env from '@/lib/env';
 import * as google from 'googleapis';
+import { getGoogleProvider } from '@/lib/googleAuthClient';
 
   export default async function handler(
     req: NextApiRequest,
@@ -44,38 +45,21 @@ import * as google from 'googleapis';
     const { id } = req.query;
     const sheetId = id as string;
 
-    const sessionToken = getCookie(sessionTokenCookieName, { req, res }) as string;
+    const auth = new google.Auth.GoogleAuth({
+      keyFile: './tinymail-ff0ddcf8ab83.json',
+      scopes: ['https://www.googleapis.com/auth/spreadsheets.readonly'],
+    });
 
-
-    // const auth = new sheetsApi.auth.OAuth2({
-    //   clientId: env.google.clientId,
-    //   clientSecret: env.google.clientSecret,
-    // })
-
-    // auth.generateAuthUrl({
-    //     access_type: 'offline',
-    //     scope: ['https://www.googleapis.com/auth/spreadsheets.readonly'],
-    // })
-    const oauth2Client = new google.Auth.OAuth2Client(
-      env.google.clientId,
-      env.google.clientSecret
-    );
-    
-    // set auth as a global default
-    const sheets = new google.sheets_v4.Sheets({ auth: oauth2Client });
-
-    // const sheets = sheetsApi.sheets({ version: 'v4', auth });
-
-    // Get data from the Google Sheet
+    const sheets = new google.sheets_v4.Sheets({ auth });
     const response = await sheets.spreadsheets.values.get({
         spreadsheetId: sheetId,
         range: 'Sheet1', // Change 'Sheet1' to the name of your sheet
     });
-    console.info('response', response.data)
+    console.info('sheets response', response.data)
 
     // fetch google sheet data
-    const sheet = await fetchGoogleSheet(teamMember.user.email!, sessionToken, sheetId, [], 'id', '1');
-    return sheet;
+    // const sheet = await fetchGoogleSheet(teamMember.user.email!, sessionToken, sheetId, [], 'id', '1');
+    // return sheet;
 
     // recordMetric('template.fetched');
   

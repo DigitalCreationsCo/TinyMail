@@ -13,20 +13,20 @@ export async function fetchGoogleSheet(email: string, token: string, source: str
             access_type: 'offline',
             scope: ['https://www.googleapis.com/auth/spreadsheets.readonly'],
         })
-        // auth.refreshHandler = async () => {
-        //     const newToken = await fetch(`https://oauth2.googleapis.com/token?refresh_token=${token}&client_id=${env.google.clientId}&client_secret=${env.google.clientSecret}&grant_type=refresh_token`, {
-        //         method: 'POST',
-        //     });
-        //     const data = await newToken.json();
-        //     console.info('data', data)
-        //     auth.setCredentials({
-        //         access_token: data.access_token,
-        //     });
-        //     return {
-        //         access_token: data.access_token,
-        //         expiry_date: data.expires_in,
-        //     }
-        // }
+        auth.refreshHandler = async () => {
+            const newToken = await fetch(`https://oauth2.googleapis.com/token?refresh_token=${token}&client_id=${env.google.clientId}&client_secret=${env.google.clientSecret}&grant_type=refresh_token`, {
+                method: 'POST',
+            });
+            const data = await newToken.json();
+            console.info(' refreshHandler data', data)
+            auth.setCredentials({
+                access_token: data.access_token,
+            });
+            return {
+                access_token: data.access_token,
+                expiry_date: data.expires_in,
+            }
+        }
         const sheets = sheetsApi.sheets({ version: 'v4', auth });
 
         // Get data from the Google Sheet
