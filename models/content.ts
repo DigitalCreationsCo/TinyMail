@@ -1,8 +1,17 @@
 import { prisma } from '@/lib/prisma';
 import { Prisma } from '@prisma/client';
 
-export const connectContent = async (param: Prisma.ContentCreateArgs['data']) => {
-  const { title, description = "", source = "", contentFields = [], authorId = '', teamId = '' } = param;
+export const connectContent = async (
+  param: Prisma.ContentCreateArgs['data']
+) => {
+  const {
+    title,
+    description = '',
+    source,
+    contentFields = [],
+    authorId = '',
+    teamId = '',
+  } = param;
 
   return await prisma.content.create({
     data: {
@@ -33,7 +42,7 @@ export const getTeamContent = async (key: { teamId: string }) => {
     where: key,
     orderBy: {
       updatedAt: 'desc',
-    }
+    },
   });
 };
 

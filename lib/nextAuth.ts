@@ -3,12 +3,11 @@ import type {
   NextApiResponse,
   GetServerSidePropsContext,
 } from 'next';
-import { Account, NextAuthOptions, Profile, User } from 'next-auth';
+import { Account, NextAuthOptions, Profile, TokenSet, User } from 'next-auth';
 import BoxyHQSAMLProvider from 'next-auth/providers/boxyhq-saml';
 import CredentialsProvider from 'next-auth/providers/credentials';
 import EmailProvider from 'next-auth/providers/email';
 import GitHubProvider from 'next-auth/providers/github';
-import GoogleProvider from 'next-auth/providers/google';
 import { PrismaAdapter } from '@next-auth/prisma-adapter';
 import type { Provider } from 'next-auth/providers';
 import { setCookie, getCookie } from 'cookies-next';
@@ -117,9 +116,7 @@ if (isAuthProviderEnabled('github')) {
 }
 
 if (isAuthProviderEnabled('google')) {
-  providers.push(
-    getGoogleProvider()
-  );
+  providers.push(getGoogleProvider());
 }
 
 if (isAuthProviderEnabled('saml')) {
@@ -266,6 +263,15 @@ export const getAuthOptions = (
     req.method === 'POST' &&
     env.nextAuth.sessionStrategy === 'database';
 
+  const isExpired = (expire: number | null) => {
+    console.info(
+      'is expired',
+      expire,
+      expire ? expire * 1000 < Date.now() : true
+    );
+    return expire ? expire * 1000 < Date.now() : true;
+  };
+
   const authOptions: NextAuthOptions = {
     adapter,
     providers,
@@ -280,6 +286,11 @@ export const getAuthOptions = (
     secret: env.nextAuth.secret,
     callbacks: {
       async signIn({ user, account, profile }) {
+        console.info('signin');
+        console.info('user', user);
+        console.info('account', account);
+        console.info('profile', profile);
+
         if (!user || !user.email || !account) {
           return false;
         }
@@ -343,8 +354,9 @@ export const getAuthOptions = (
         }
 
         const linkedAccount = await getAccount({ userId: existingUser.id });
+        console.info('linkedAccount', linkedAccount);
 
-        if (!linkedAccount) {
+        if (!linkedAccount || isExpired(linkedAccount.expires_at)) {
           await linkAccount(existingUser, account);
         }
 
@@ -354,6 +366,69 @@ export const getAuthOptions = (
       async session({ session, token, user }) {
         // When using JWT for sessions, the JWT payload (token) is provided.
         // When using database sessions, the User (user) object is provided.
+
+        console.info('req', (req as NextApiRequest).query.nextauth);
+        console.info('session: ', session);
+        console.info('token: ', token);
+        console.info('user: ', user);
+
+        const [google] = await prisma.account.findMany({
+          where: { userId: user.id, provider: 'google' },
+        });
+
+        console.info('google', google);
+
+        if (!google || !google.expires_at || !google.refresh_token)
+          throw new Error('Google account not found');
+
+        if (isExpired(google.expires_at)) {
+          // If the access token has expired, try to refresh it
+          try {
+            console.info('refreshing access token');
+            // https://accounts.google.com/.well-known/openid-configuration
+            // We need the `token_endpoint`.
+            const response = await fetch(
+              'https://oauth2.googleapis.com/token',
+              {
+                headers: {
+                  'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                body: new URLSearchParams({
+                  client_id: env.google.clientId,
+                  client_secret: env.google.clientSecret,
+                  grant_type: 'refresh_token',
+                  refresh_token: google.refresh_token,
+                }),
+                method: 'POST',
+              }
+            );
+
+            const tokens: TokenSet = await response.json();
+
+            if (!response.ok) throw tokens;
+
+            await prisma.account.update({
+              data: {
+                access_token: tokens.access_token,
+                expires_at: Math.floor(
+                  Date.now() / 1000 + (tokens.expires_in as number)
+                ),
+                refresh_token: tokens.refresh_token ?? google.refresh_token,
+              },
+              where: {
+                provider_providerAccountId: {
+                  provider: 'google',
+                  providerAccountId: google.providerAccountId,
+                },
+              },
+            });
+          } catch (error) {
+            console.error('Error refreshing access token', error);
+            // The error property will be used client-side to handle the refresh token error
+            session.error = 'RefreshAccessTokenError';
+          }
+        }
+
         if (session && (token || user)) {
           session.user.id = token?.sub || user?.id;
         }
@@ -402,14 +477,26 @@ export const getAuthOptions = (
 
 const linkAccount = async (user: User, account: Account) => {
   if (adapter.linkAccount) {
-    return await adapter.linkAccount({
-      providerAccountId: account.providerAccountId,
-      userId: user.id,
-      provider: account.provider,
-      type: 'oauth',
-      scope: account.scope,
-      token_type: account.token_type,
-      access_token: account.access_token,
+    console.info('linkAccount', user, account);
+    return await prisma.account.update({
+      where: {
+        provider_providerAccountId: {
+          provider: account.provider,
+          providerAccountId: account.providerAccountId,
+        },
+      },
+      data: {
+        providerAccountId: account.providerAccountId,
+        userId: user.id,
+        provider: account.provider,
+        type: 'oauth',
+        scope: account.scope,
+        token_type: account.token_type,
+        access_token: account.access_token,
+        refresh_token: account.refresh_token || undefined,
+        expires_at: account.expires_at || undefined,
+        id_token: account.id_token || undefined,
+      },
     });
   }
 };
@@ -445,3 +532,18 @@ const linkToTeam = async (profile: Profile, userId: string) => {
 
   await addTeamMember(team.id, userId, userRole);
 };
+
+declare module 'next-auth' {
+  interface Session {
+    error?: 'RefreshAccessTokenError';
+  }
+}
+
+declare module 'next-auth/jwt' {
+  interface JWT {
+    access_token: string;
+    expires_at: number;
+    refresh_token: string;
+    error?: 'RefreshAccessTokenError';
+  }
+}

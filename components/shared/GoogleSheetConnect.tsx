@@ -26,6 +26,12 @@ export default function GoogleSheetConnect() {
             return;
             }
 
+            if (response.status === 302) {
+                const json = (await response.json()) as ApiResponse<{auth_url: string;}>;
+                window.location.href = json.data.auth_url;
+                return;
+            }
+
         const data = await response.json();
         console.log(data);
     }

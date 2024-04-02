@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Loading } from '@/components/shared';
 import { useSession } from 'next-auth/react';
 import React from 'react';
@@ -8,8 +8,15 @@ import { useRouter } from 'next/navigation';
 
 export default function AppShell({ children }) {
   const router = useRouter();
-  const { status } = useSession();
+  const { status, data: session } = useSession();
   const [sidebarOpen, setSidebarOpen] = useState(false);
+
+  useEffect(() => {
+    if (session?.error === 'RefreshAccessTokenError') {
+      router.push('/auth/login');
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [session]);
 
   if (status === 'loading') {
     return <Loading />;

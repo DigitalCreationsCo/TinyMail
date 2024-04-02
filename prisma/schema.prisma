@@ -209,7 +209,6 @@ model Content {
   title       String
   description String
   source      ContentSource
-  sourceId    String
   contentFields String[]
   teamId      String
   authorId    String

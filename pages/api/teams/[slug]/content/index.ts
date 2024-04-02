@@ -1,7 +1,5 @@
 import { sendAudit } from '@/lib/retraced';
-import {
-  throwIfNoTeamAccess,
-} from 'models/team';
+import { throwIfNoTeamAccess } from 'models/team';
 import { throwIfNotAllowed } from 'models/user';
 import type { NextApiRequest, NextApiResponse } from 'next';
 import { recordMetric } from '@/lib/metrics';
@@ -41,7 +39,7 @@ const handleGET = async (req: NextApiRequest, res: NextApiResponse) => {
   const teamMember = await throwIfNoTeamAccess(req, res);
   throwIfNotAllowed(teamMember, 'team_content', 'read');
 
-  const contents = await getTeamContent({teamId: teamMember.team.id });
+  const contents = await getTeamContent({ teamId: teamMember.team.id });
 
   recordMetric('content.fetched');
 
@@ -53,10 +51,14 @@ const handlePOST = async (req: NextApiRequest, res: NextApiResponse) => {
   const teamMember = await throwIfNoTeamAccess(req, res);
   throwIfNotAllowed(teamMember, 'team_content', 'create');
 
-  const { title, description, source } = req.body as Prisma.ContentCreateInput
+  const { title, description, source } = req.body as Prisma.ContentCreateInput;
 
   const contentCreated = await connectContent({
-    title, description, source, teamId: teamMember.team.id, authorId: teamMember.user.id,
+    title,
+    description,
+    source,
+    teamId: teamMember.team.id,
+    authorId: teamMember.user.id,
   });
 
   sendAudit({

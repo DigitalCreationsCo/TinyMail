@@ -5,11 +5,11 @@ module.exports = {
     node: true,
   },
   extends: [
+    'next/core-web-vitals',
     'eslint:recommended',
     'plugin:@typescript-eslint/recommended',
-    'prettier',
-    'next/core-web-vitals',
     'plugin:i18next/recommended',
+    'prettier',
   ],
   parser: '@typescript-eslint/parser',
   parserOptions: {
@@ -19,9 +19,10 @@ module.exports = {
     ecmaVersion: 'latest',
     sourceType: 'module',
   },
-  plugins: ['react', '@typescript-eslint', 'i18next'],
+  plugins: ['react', '@typescript-eslint', 'i18next', 'prettier'],
   rules: {
     '@typescript-eslint/no-explicit-any': 'off',
+    'prettier/prettier': ['warn'],
   },
   settings: {
     react: {
