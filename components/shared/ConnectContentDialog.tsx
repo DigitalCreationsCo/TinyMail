@@ -1,10 +1,13 @@
 import { useTranslation } from 'next-i18next';
 import { Button } from 'react-daisyui';
 import Modal from './Modal';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import InputWithLabel from './InputWithLabel';
-import { ChevronUpDownIcon, LinkIcon } from '@heroicons/react/24/outline';
-import GoogleSheetConnect from './GoogleSheetConnect';
+import {
+  ChevronUpDownIcon,
+  ArrowTopRightOnSquareIcon,
+} from '@heroicons/react/24/outline';
+import GoogleSheetConnect, { ContentFieldMapper } from './GoogleSheetConnect';
 
 interface ConnectContentDialogProps {
   visible: boolean;
@@ -21,7 +24,6 @@ const ConnectContentDialog = ({
   confirmText,
   cancelText,
 }: ConnectContentDialogProps) => {
-
   const [loading, setLoading] = useState(false);
   const { t } = useTranslation('common');
 
@@ -35,33 +37,40 @@ const ConnectContentDialog = ({
     }
   };
 
-  const [source, setSource] = useState(t('connect-content-source'));
-  const [contentFields, setContentFields] = useState<string[]>([]);
-  const addContentField = (field: string) => {
+  const [source, setSource] = useState<string>(t('connect-content-source'));
+  const [contentFields, setContentFields] = useState<ContentFields>([]);
+  const [data, setData] = useState<string[][]>([]);
+  const [headerRowOrientation, setHeaderRowOrientation] = useState<
+    'horizontal' | 'vertical'
+  >('horizontal');
+
+  useEffect(() => {
+    return () => {};
+  }, []);
+  const addContentField = (field: [string, string]) => {
     setContentFields([...contentFields, field]);
-  }
+  };
   const removeContentField = (field: string) => {
-    setContentFields(contentFields.filter((f) => f !== field));
-  }
-  const updateContentField = (field: string, index: number) => {
+    setContentFields(contentFields.filter((f) => f[0] !== field));
+  };
+  const updateContentField = (field: [string, string], index: number) => {
     const newContentFields = [...contentFields];
     newContentFields[index] = field;
     setContentFields(newContentFields);
-  }
+  };
 
   return (
     <Modal open={visible} close={onCancel} className="max-w-[700px]">
       {/* eslint-disable-next-line i18next/no-literal-string, i18next/no-literal-string, i18next/no-literal-string */}
       <Modal.Header>{t('connect-content-source')}</Modal.Header>
       <Modal.Body className="text-sm leading-6">
-
-      <div className="dropdown w-60">
+        <div className="dropdown">
           <div
             tabIndex={0}
             className="border border-gray-300 dark:border-gray-600 flex h-10 items-center px-4 justify-between cursor-pointer rounded text-sm font-bold"
           >
             <div className="flex items-center gap-2">
-              <LinkIcon className="w-5 h-5" /> {source}
+              <ArrowTopRightOnSquareIcon className="w-5 h-5" /> {source}
             </div>
             <ChevronUpDownIcon className="w-5 h-5" />
           </div>
@@ -69,30 +78,55 @@ const ConnectContentDialog = ({
             tabIndex={0}
             className="dropdown-content dark:border-gray-600 p-2 shadow-md bg-base-100 w-full rounded border px-2"
           >
-            {['GOOGLE_SHEET'].map((source, index) => (
-              <li key={index}>
+            {[['Google Sheet', 'GOOGLE_SHEET']].map(([key, value]) => (
+              <li key={`select-${key}`}>
                 <button
                   className="w-full flex hover:bg-gray-100 hover:dark:text-black focus:bg-gray-100 focus:outline-none py-2 px-2 rounded text-sm font-medium gap-2 items-center"
-                  onClick={() => {setSource(source);
+                  onClick={() => {
+                    setSource(value);
                     if (document.activeElement) {
                       (document.activeElement as HTMLElement).blur();
-                    }}}
+                    }
+                  }}
                 >
-                  {source}
+                  {key}
                 </button>
               </li>
             ))}
           </ul>
         </div>
 
-        {source==='GOOGLE_SHEET' && <GoogleSheetConnect /> || <></>}
+        {(source === 'GOOGLE_SHEET' && (
+          <GoogleSheetConnect
+            setData={setData}
+            setHeaderRowOrientation={setHeaderRowOrientation}
+            headerRowOrientation={headerRowOrientation}
+          />
+        )) || <></>}
 
+        {(data && data.length && (
+          <ContentFieldMapper
+            contentFields={contentFields}
+            headerRowOrientation={headerRowOrientation}
+            updateContentField={updateContentField}
+            addContentField={addContentField}
+            removeContentField={removeContentField}
+            data={data}
+          />
+        )) || <></>}
       </Modal.Body>
       <Modal.Footer>
         <Button type="button" variant="outline" onClick={onCancel} size="md">
           {cancelText || t('cancel')}
         </Button>
-        <Button loading={loading} type="button" color="error" onClick={handleSubmit} size="md">
+        <Button
+          loading={loading}
+          disabled={contentFields.length === 0}
+          type="button"
+          color="error"
+          onClick={handleSubmit}
+          size="md"
+        >
           {confirmText || t('save-changes')}
         </Button>
       </Modal.Footer>
@@ -101,3 +135,5 @@ const ConnectContentDialog = ({
 };
 
 export default ConnectContentDialog;
+
+export type ContentFields = [string, string][];

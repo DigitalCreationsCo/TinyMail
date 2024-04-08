@@ -14,7 +14,8 @@ interface ContentProps {
 
 const Contents = ({ contents, team, removeContent }: ContentProps) => {
   const [askConfirmation, setAskConfirmation] = useState(false);
-  const [openConnectContentDialog, setOpenConnectContentDialog] = useState(false);
+  const [openConnectContentDialog, setOpenConnectContentDialog] =
+    useState(false);
   const [content, setContent] = useState<Content | null>(null);
 
   const { t } = useTranslation('common');
@@ -24,20 +25,18 @@ const Contents = ({ contents, team, removeContent }: ContentProps) => {
     <div className="space-y-3">
       <div className="flex justify-between items-center">
         <div>
-          <h2 className="text-xl font-semibold mb-2">
-            {t('content')}
-          </h2>
+          <h2 className="text-xl font-semibold mb-2">{t('content')}</h2>
           <p>{t('connect-content-source')}</p>
-          </div>
-  
-         <Button
-            color="primary"
-            size="md"
-            onClick={() => setOpenConnectContentDialog(true)}
-          >
-            {t('connect-content')}
-          </Button>
         </div>
+
+        <Button
+          color="primary"
+          size="md"
+          onClick={() => setOpenConnectContentDialog(true)}
+        >
+          {t('connect-content')}
+        </Button>
+      </div>
 
       <table className="table w-full text-sm border">
         <thead>
@@ -51,23 +50,33 @@ const Contents = ({ contents, team, removeContent }: ContentProps) => {
         </thead>
         <tbody>
           {contents.map((content) => (
-            <tr className="cursor-pointer" key={content.id} onClick={() => router.push('/teams/[slug]/contents[id]/edit', `/teams/${team.slug}/contents/${content.id}/edit`)}>
+            <tr
+              className="cursor-pointer"
+              key={content.id}
+              onClick={() =>
+                router.push(
+                  '/teams/[slug]/contents[id]/edit',
+                  `/teams/${team.slug}/contents/${content.id}/edit`
+                )
+              }
+            >
               <td>{content.id}</td>
               <td>{content.title}</td>
               <td>{new Date(content.createdAt).toLocaleDateString()}</td>
               <td>{new Date(content.updatedAt).toLocaleDateString()}</td>
               <td>
-              <Button
-                color="error"
-                size="sm"
-                onClick={(e) => {
-                  e.preventDefault();
-                  e.stopPropagation();
-                  setContent(content);
-                  setAskConfirmation(true);
-                }}>
+                <Button
+                  color="error"
+                  size="sm"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    setContent(content);
+                    setAskConfirmation(true);
+                  }}
+                >
                   {t('remove-content')}
-              </Button>
+                </Button>
               </td>
             </tr>
           ))}
@@ -89,7 +98,7 @@ const Contents = ({ contents, team, removeContent }: ContentProps) => {
       >
         {t('remove-content-confirmation')}
       </ConfirmationDialog>
-      
+
       <ConnectContentDialog
         confirmText={t('connect-content')}
         visible={openConnectContentDialog}

@@ -2,7 +2,7 @@ import { throwIfNoTeamAccess } from 'models/team';
 import { throwIfNotAllowed } from 'models/user';
 import type { NextApiRequest, NextApiResponse } from 'next';
 import { recordMetric } from '@/lib/metrics';
-import { fetchGoogleSheet } from '@/lib/google-sheet';
+import { GoogleSheetData, fetchGoogleSheet } from '@/lib/google-sheet';
 import { getCookie } from 'cookies-next';
 import { sessionTokenCookieName } from '@/lib/nextAuth';
 import * as sheetsApi from '@googleapis/sheets';
@@ -41,7 +41,13 @@ const handleGET = async (req: NextApiRequest, res: NextApiResponse) => {
   const teamMember = await throwIfNoTeamAccess(req, res);
   throwIfNotAllowed(teamMember, 'team_content', 'read');
 
-  const { id } = req.query;
+  const { id, sheetName } = req.query as { id: string; sheetName: string };
+  if (!id || !sheetName) {
+    return res
+      .status(400)
+      .json({ error: 'Sheet ID and Sheet Name are required' });
+  }
+
   const sheetId = id as string;
 
   const auth = new google.Auth.OAuth2Client({
@@ -77,9 +83,8 @@ const handleGET = async (req: NextApiRequest, res: NextApiResponse) => {
   const sheets = new google.sheets_v4.Sheets({ auth });
   const response = await sheets.spreadsheets.values.get({
     spreadsheetId: sheetId,
-    range: 'Sheet1', // Change 'Sheet1' to the name of your sheet
+    range: sheetName,
   });
-  console.info('sheets response', response.data);
 
   // fetch google sheet data
   // const sheet = await fetchGoogleSheet(teamMember.user.email!, sessionToken, sheetId, [], 'id', '1');
@@ -87,5 +92,5 @@ const handleGET = async (req: NextApiRequest, res: NextApiResponse) => {
 
   // recordMetric('template.fetched');
 
-  res.status(200).json({ data: sheet });
+  res.status(200).json(response.data);
 };
