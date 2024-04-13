@@ -38,10 +38,13 @@ const TemplatesPage = () => {
   const templates = data?.data || [];
 
   const removeTemplate = async (team, template: Template) => {
-    const response = await fetch(`/api/teams/${team.slug}/templates?templateId=${template.id}`, {
-      method: 'DELETE',
-      headers: defaultHeaders,
-    });
+    const response = await fetch(
+      `/api/teams/${team.slug}/templates?templateId=${template.id}`,
+      {
+        method: 'DELETE',
+        headers: defaultHeaders,
+      }
+    );
 
     const json = (await response.json()) as ApiResponse;
 
@@ -58,7 +61,11 @@ const TemplatesPage = () => {
     <WithLoadingAndError isLoading={isLoading} error={error}>
       {canAccess('team_templates', ['read', 'create', 'delete', 'update']) && (
         <div className="space-y-3">
-          <Templates templates={templates} team={team} removeTemplate={removeTemplate}/>
+          <Templates
+            templates={templates}
+            team={team}
+            removeTemplate={removeTemplate}
+          />
         </div>
       )}
     </WithLoadingAndError>

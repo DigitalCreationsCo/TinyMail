@@ -2,7 +2,15 @@ import { prisma } from '@/lib/prisma';
 import { Prisma } from '@prisma/client';
 
 export const createEmail = async (param: Prisma.EmailCreateArgs['data']) => {
-  const { title, description = "", backgroundColor = "", doc, image = "", authorId = '', teamId = '' } = param;
+  const {
+    title,
+    description = '',
+    backgroundColor = '',
+    doc,
+    image = '',
+    authorId = '',
+    teamId = '',
+  } = param;
 
   return await prisma.email.create({
     data: {
@@ -12,7 +20,7 @@ export const createEmail = async (param: Prisma.EmailCreateArgs['data']) => {
       authorId,
       backgroundColor,
       teamId,
-      image
+      image,
     },
   });
 };
@@ -28,7 +36,7 @@ export const getTeamEmails = async (key: { teamId: string }) => {
     where: key,
     orderBy: {
       updatedAt: 'desc',
-    }
+    },
   });
 };
 

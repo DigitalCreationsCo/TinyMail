@@ -1,6 +1,6 @@
 import { useTranslation } from 'next-i18next';
 import { Button } from 'react-daisyui';
-import { Dispatch, SetStateAction, useEffect, useState } from 'react';
+import { Dispatch, SetStateAction, useState } from 'react';
 import InputWithLabel from './InputWithLabel';
 import type { ApiResponse } from 'types';
 import toast from 'react-hot-toast';
@@ -8,10 +8,13 @@ import { GoogleSheetData } from '@/lib/google-sheet';
 import { ContentFields } from './ConnectContentDialog';
 import {
   ChevronUpDownIcon,
+  XCircleIcon,
   LinkIcon,
+  QuestionMarkCircleIcon,
   PlusIcon,
   CheckIcon,
 } from '@heroicons/react/24/outline';
+import classNames from 'classnames';
 
 export default function GoogleSheetConnect({
   setData,
@@ -133,39 +136,82 @@ export const ContentFieldMapper = ({
   contentFields: ContentFields;
   updateContentField: (field: [string, string], index: number) => void;
   addContentField: (field: [string, string]) => void;
-  removeContentField: (field: string) => void;
+  removeContentField: (field: [string, string]) => void;
   headerRowOrientation: 'horizontal' | 'vertical';
   data: string[][];
 }) => {
+  console.info('contentFields', contentFields);
+
   const { t } = useTranslation('common');
 
   const [field, setField] = useState<[string, string]>(['', '']);
-  const [current, setCurrent] = useState<number>(0);
+  const [editField, setEditField] = useState(false);
+  const [current, setCurrent] = useState<number | null>(null);
 
   const headerRow =
     headerRowOrientation === 'horizontal' ? data[0] : data.map((row) => row[0]);
   const contentRow =
     headerRowOrientation === 'horizontal' ? data[1] : data.map((row) => row[1]);
-  const ContentFields = () => (
-    <div>
-      {contentFields.map(([key, value]) => (
-        <button key={`${key}`} onClick={() => setField([key, value])}>
-          {key}:{value}
-        </button>
-      ))}
-    </div>
-  );
-  const FieldInput = () => (
-    <InputWithLabel
-      label={t('set-field-name')}
-      name="field-name"
-      aria-label={t('set-field-name')}
-      className="w-full max-w-md text-sm"
-      value={field?.[0]}
-      onChange={(e) => setField((prevField) => [e.target.value, prevField[1]])}
-      required
-    />
-  );
+
+  const ContentFieldButton = ({
+    field,
+    index,
+  }: {
+    field: ContentFields[number];
+    index: number;
+  }) => {
+    const [key, value] = field;
+
+    const [reallyDelete, setReallyDelete] = useState(false);
+    const deleteContentField = (index: number) => {
+      console.info('index ', index, contentFields[index]);
+      if (reallyDelete) {
+        removeContentField(contentFields[index]);
+        setReallyDelete(false);
+      } else {
+        setReallyDelete(true);
+      }
+    };
+    return (
+      <button
+        className={classNames(
+          'border p-2 rounded-full h-10',
+          'flex flex-row items-center gap-x-2',
+          current === index ? 'bg-blue-200' : 'bg-gray-100'
+        )}
+        onClick={() => {
+          if (current === index) {
+            setField(['', '']);
+            setCurrent(null);
+          } else {
+            setField([key, value]);
+            setCurrent(index);
+            setEditField(true);
+          }
+        }}
+      >
+        {key}: {value}
+        {reallyDelete ? (
+          <QuestionMarkCircleIcon
+            className="w-6 h-6 text-red-400"
+            onClick={(e) => {
+              e.stopPropagation();
+              deleteContentField(index);
+            }}
+          />
+        ) : (
+          <XCircleIcon
+            className="w-6 h-6 hover:text-red-400"
+            onClick={(e) => {
+              e.stopPropagation();
+              deleteContentField(index);
+            }}
+          />
+        )}
+      </button>
+    );
+  };
+
   const ContentDropdown = () => (
     <div className="dropdown w-full">
       <p>{t('content-field-map-description')}</p>
@@ -175,6 +221,7 @@ export const ContentFieldMapper = ({
       >
         <div className="flex items-center gap-2">
           <LinkIcon className="w-5 h-5" />
+          {field[1]}
         </div>
         <ChevronUpDownIcon className="w-5 h-5" />
       </div>
@@ -182,14 +229,15 @@ export const ContentFieldMapper = ({
         tabIndex={0}
         className="dropdown-content dark:border-gray-600 p-2 shadow-md bg-base-100 w-full rounded border px-2"
       >
-        {contentRow?.map((source, index) => (
+        {headerRow?.map((source, index) => (
           <li key={`data-${index}`}>
             <button
               className="w-full flex hover:bg-gray-100 hover:dark:text-black focus:bg-gray-100 focus:outline-none py-2 px-2 rounded text-sm font-medium gap-2 items-center"
               onClick={() => {
-                // setField([headerRow[index], source]);
-                // setCurrent(index);
-                // addContentField([headerRow[index], source]);
+                setField((prev) => [prev[0], source]);
+                if (contentFields.includes([field[0], source])) {
+                  setCurrent(index);
+                }
               }}
             >
               {source}
@@ -202,25 +250,47 @@ export const ContentFieldMapper = ({
   );
 
   return (
-    <div className="py-2">
-      <ContentFields />
-      {'field: ' + field[0]}
-      {'field content: ' + field[1]}
-      {(field && (
+    <div className="pb-4">
+      <div className="min-h-10">
+        <p className="font-semibold">{t('content-fields')}</p>
+        {contentFields.map((field, index) => (
+          <ContentFieldButton key={field[0]} field={field} index={index} />
+        ))}
+      </div>
+      {/* {'field: ' + field[0]}
+      {', '}
+      {'field content: ' + field[1]} */}
+      {(editField && (
         <>
           <p className="font-semibold">{t('update-field')}</p>
-          <div className="flex flex-col sm:flex-row items-end justify-between border sm:space-x-4">
-            <FieldInput />
+          <div className="flex flex-col sm:flex-row items-end justify-between sm:space-x-4">
+            <InputWithLabel
+              label={t('set-field-name')}
+              name="field"
+              aria-label={t('set-field-name')}
+              className="w-full max-w-md text-sm"
+              value={field?.[0]}
+              onChange={(e) =>
+                setField((prevField) => [e.target.value, prevField[1]])
+              }
+              required
+            />
             <ContentDropdown />
             <Button
               type="button"
               variant="outline"
               className="mt-4 mb-4 sm:mb-0 self-end"
               onClick={() => {
-                if (field) {
-                  updateContentField(field, current);
+                if (field[0] && field[1]) {
+                  if (current !== null) {
+                    updateContentField(field, current);
+                  } else {
+                    addContentField([field[0], field[1]]);
+                  }
+                  setField(['', '']);
+                  setCurrent(null);
+                  setEditField(false);
                 }
-                setField(['', '']);
               }}
               size="md"
             >
@@ -229,7 +299,7 @@ export const ContentFieldMapper = ({
           </div>
         </>
       )) || <></>}
-      {!field && (
+      {!editField && (
         <>
           <p className="font-semibold">{t('add-field')}</p>
           <Button
@@ -238,6 +308,7 @@ export const ContentFieldMapper = ({
             className="mt-4 mb-4 sm:mb-0 self-end"
             onClick={() => {
               setField(['', '']);
+              setEditField(true);
             }}
             size="md"
           >

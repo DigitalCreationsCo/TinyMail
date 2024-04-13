@@ -2,16 +2,16 @@ import { useTranslation } from 'next-i18next';
 import { Button } from 'react-daisyui';
 import Modal from './Modal';
 import { useEffect, useState } from 'react';
-import InputWithLabel from './InputWithLabel';
 import {
   ChevronUpDownIcon,
   ArrowTopRightOnSquareIcon,
 } from '@heroicons/react/24/outline';
 import GoogleSheetConnect, { ContentFieldMapper } from './GoogleSheetConnect';
+import { Content } from '@prisma/client';
 
 interface ConnectContentDialogProps {
   visible: boolean;
-  onConfirm: () => void | Promise<any>;
+  onConfirm: (content: Content) => void | Promise<any>;
   onCancel: () => void;
   confirmText?: string;
   cancelText?: string;
@@ -29,6 +29,9 @@ const ConnectContentDialog = ({
 
   const handleSubmit = async () => {
     try {
+      const newContent: Content = {
+        contentFields,
+      };
       setLoading(true);
       await onConfirm();
       setLoading(false);
@@ -50,8 +53,9 @@ const ConnectContentDialog = ({
   const addContentField = (field: [string, string]) => {
     setContentFields([...contentFields, field]);
   };
-  const removeContentField = (field: string) => {
-    setContentFields(contentFields.filter((f) => f[0] !== field));
+  const removeContentField = (field: [string, string]) => {
+    console.info('remove field', field, 'contentFields', contentFields);
+    setContentFields(contentFields.filter((f) => f !== field));
   };
   const updateContentField = (field: [string, string], index: number) => {
     const newContentFields = [...contentFields];
@@ -95,7 +99,6 @@ const ConnectContentDialog = ({
             ))}
           </ul>
         </div>
-
         {(source === 'GOOGLE_SHEET' && (
           <GoogleSheetConnect
             setData={setData}
@@ -103,19 +106,27 @@ const ConnectContentDialog = ({
             headerRowOrientation={headerRowOrientation}
           />
         )) || <></>}
-
         {(data && data.length && (
-          <ContentFieldMapper
-            contentFields={contentFields}
-            headerRowOrientation={headerRowOrientation}
-            updateContentField={updateContentField}
-            addContentField={addContentField}
-            removeContentField={removeContentField}
-            data={data}
-          />
+          <>
+            <hr className="my-2" />
+            <ContentFieldMapper
+              contentFields={contentFields}
+              headerRowOrientation={headerRowOrientation}
+              updateContentField={updateContentField}
+              addContentField={addContentField}
+              removeContentField={removeContentField}
+              data={data}
+            />
+          </>
         )) || <></>}
+        <hr />
       </Modal.Body>
       <Modal.Footer>
+        {(data && data.length && (
+          <p className="font-semibold place-self-start">
+            {t('connect-content-fields')}
+          </p>
+        )) || <></>}
         <Button type="button" variant="outline" onClick={onCancel} size="md">
           {cancelText || t('cancel')}
         </Button>

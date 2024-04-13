@@ -323,7 +323,7 @@ export const getAuthOptions = (
             email: `${user.email}`,
           });
 
-          await linkAccount(newUser, account);
+          await createAccountLink(newUser, account);
 
           if (isIdpLogin && user) {
             await linkToTeam(user as unknown as Profile, newUser.id);
@@ -473,6 +473,26 @@ export const getAuthOptions = (
   };
 
   return authOptions;
+};
+
+const createAccountLink = async (user: User, account: Account) => {
+  if (adapter.linkAccount) {
+    console.info('linkAccount', user, account);
+    return await prisma.account.create({
+      data: {
+        providerAccountId: account.providerAccountId,
+        userId: user.id,
+        provider: account.provider,
+        type: 'oauth',
+        scope: account.scope,
+        token_type: account.token_type,
+        access_token: account.access_token,
+        refresh_token: account.refresh_token || undefined,
+        expires_at: account.expires_at || undefined,
+        id_token: account.id_token || undefined,
+      },
+    });
+  }
 };
 
 const linkAccount = async (user: User, account: Account) => {

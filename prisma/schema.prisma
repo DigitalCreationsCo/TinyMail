@@ -66,7 +66,7 @@ model User {
   mailchimpApiKey        String?
   templates      Template[]
   emails         Email[]
-  content     Content[]
+  contentMaps     ContentMap[]
   teamMembers TeamMember[]
   accounts    Account[]
   sessions    Session[]
@@ -86,7 +86,7 @@ model Team {
   members         TeamMember[]
   templates      Template[]
   emails         Email[]
-  content     Content[]
+  contentMaps     ContentMap[]
   invitations     Invitation[]
   apiKeys         ApiKey[]
 }
@@ -204,16 +204,22 @@ model Email {
   updatedAt   DateTime @default(now())
 }
 
-model Content {
+model ContentMap {
   id          String   @id @default(uuid())
   title       String
   description String
+
   source      ContentSource
   contentFields String[]
+
+  templateId String
+  template    Template @relation(fields: [templateId], references: [id], onDelete: Cascade)
+
   teamId      String
   authorId    String
   team Team @relation(fields: [teamId], references: [id], onDelete: Cascade)
   author User @relation(fields: [authorId], references: [id], onDelete: Cascade)
+
   createdAt   DateTime @default(now())
   updatedAt   DateTime @default(now())
 }
@@ -229,23 +235,15 @@ model Template {
   image       String?
   doc         String
   backgroundColor String
+
+  templateFields String[]
+  contentMaps     ContentMap[]
+
   teamId      String
   authorId    String
-  team Team @relation(fields: [teamId], references: [id], onDelete: Cascade)
+  team Team   @relation(fields: [teamId], references: [id], onDelete: Cascade)
   author User @relation(fields: [authorId], references: [id], onDelete: Cascade)
-  templateMaps      TemplateMap[]
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @default(now())
-}
 
-// create a schema that can be used to map template fields to content fields
-model TemplateMap {
-  id          String   @id @default(uuid())
-  templateField String
-  contentField String
-  description String
-  templateId  String
-  template    Template @relation(fields: [templateId], references: [id], onDelete: Cascade)
   createdAt   DateTime @default(now())
   updatedAt   DateTime @default(now())
 }

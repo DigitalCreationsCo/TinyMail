@@ -21,19 +21,21 @@ const Emails = ({ emails, team, removeEmail }: EmailsProps) => {
 
   return (
     <div className="space-y-3">
-        <div className="flex justify-between items-center">
-
-      <h2 className="text-xl font-semibold mb-2">
-        {t('emails')}
-      </h2>
-         <Button
-            color="primary"
-            size="md"
-            onClick={() => router.push('/teams/[slug]/emails/create', `/teams/${team.slug}/emails/create`)}
-          >
-            {t('create-email')}
-          </Button>
-        </div>
+      <div className="flex justify-between items-center">
+        <h2 className="text-xl font-semibold mb-2">{t('emails')}</h2>
+        <Button
+          color="primary"
+          size="md"
+          onClick={() =>
+            router.push(
+              '/teams/[slug]/emails/create',
+              `/teams/${team.slug}/emails/create`
+            )
+          }
+        >
+          {t('create-email')}
+        </Button>
+      </div>
 
       <table className="table w-full text-sm border">
         <thead>
@@ -47,26 +49,41 @@ const Emails = ({ emails, team, removeEmail }: EmailsProps) => {
         </thead>
         <tbody>
           {emails.map((email) => (
-            <tr className="cursor-pointer" key={email.id} onClick={() => router.push('/teams/[slug]/emails[id]/edit', `/teams/${team.slug}/emails/${email.id}/edit`)}>
+            <tr
+              className="cursor-pointer"
+              key={email.id}
+              onClick={() =>
+                router.push(
+                  '/teams/[slug]/emails[id]/edit',
+                  `/teams/${team.slug}/emails/${email.id}/edit`
+                )
+              }
+            >
               <td>
-                <Image src={decodeURIComponent(email.image as string)} alt={email.title} width={100} height={100} />
-                </td>
+                <Image
+                  src={decodeURIComponent(email.image as string)}
+                  alt={email.title}
+                  width={100}
+                  height={100}
+                />
+              </td>
               <td>{email.id}</td>
               <td>{email.title}</td>
               <td>{new Date(email.createdAt).toLocaleDateString()}</td>
               <td>{new Date(email.updatedAt).toLocaleDateString()}</td>
               <td>
-              <Button
-                color="error"
-                size="sm"
-                onClick={(e) => {
-                  e.preventDefault();
-                  e.stopPropagation();
-                  setEmail(email);
-                  setAskConfirmation(true);
-                }}>
+                <Button
+                  color="error"
+                  size="sm"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    setEmail(email);
+                    setAskConfirmation(true);
+                  }}
+                >
                   {t('remove-email')}
-              </Button>
+                </Button>
               </td>
             </tr>
           ))}

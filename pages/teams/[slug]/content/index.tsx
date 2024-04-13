@@ -38,10 +38,13 @@ const ContentPage = () => {
   const content = data?.data || [];
 
   const removeContent = async (team, content: Content) => {
-    const response = await fetch(`/api/teams/${team.slug}/content?id=${content.id}`, {
-      method: 'DELETE',
-      headers: defaultHeaders,
-    });
+    const response = await fetch(
+      `/api/teams/${team.slug}/content?id=${content.id}`,
+      {
+        method: 'DELETE',
+        headers: defaultHeaders,
+      }
+    );
 
     const json = (await response.json()) as ApiResponse;
 
@@ -58,7 +61,12 @@ const ContentPage = () => {
     <WithLoadingAndError isLoading={isLoading} error={error}>
       {canAccess('team_content', ['read', 'create', 'delete', 'update']) && (
         <div className="space-y-3">
-          <Contents contents={content} team={team} removeContent={removeContent}/>
+          <Contents
+            contents={content}
+            team={team}
+            // connectContent={connectContent}
+            removeContent={removeContent}
+          />
         </div>
       )}
     </WithLoadingAndError>
@@ -78,9 +86,8 @@ export async function getServerSideProps({
 
 export default ContentPage;
 
-
 /**
  * TEMPLATE MAP NOTES:
  * If you change the field names of your source content, you will need to change them in TinyMail as well.
- * 
+ *
  */

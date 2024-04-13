@@ -10,9 +10,15 @@ interface ContentProps {
   contents: Content[];
   team: Team;
   removeContent: (team: Team, content: Content) => void;
+  connectContent: (content: Content) => void;
 }
 
-const Contents = ({ contents, team, removeContent }: ContentProps) => {
+const Contents = ({
+  contents,
+  team,
+  removeContent,
+  connectContent,
+}: ContentProps) => {
   const [askConfirmation, setAskConfirmation] = useState(false);
   const [openConnectContentDialog, setOpenConnectContentDialog] =
     useState(false);
@@ -103,7 +109,7 @@ const Contents = ({ contents, team, removeContent }: ContentProps) => {
         confirmText={t('connect-content')}
         visible={openConnectContentDialog}
         onCancel={() => setOpenConnectContentDialog(false)}
-        onConfirm={() => {}}
+        onConfirm={connectContent}
       />
     </div>
   );

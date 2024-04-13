@@ -229,6 +229,8 @@
   "set-field-name": "Set Field Name",
   "add-field": "Add Content Field",
   "update-field": "Update Content Field",
+  "content-fields": "Content Fields",
+  "connect-content-fields": "When you're ready, press Connect Content",
   "request-new-link": "Request new link",
   "unlock-account-link-sent": "A new link has been sent to your email address.",
   "or": "or",
