@@ -38,9 +38,9 @@ const VideoBackground = ({
   children,
 }: { video: any } & PropsWithChildren) => {
   return (
-    <div className="relative flex w-full grow">
+    <div className="relative flex  grow">
       <video
-        className="border"
+        className="border-t"
         style={{
           position: 'absolute',
           aspectRatio: 'auto',
