@@ -26,7 +26,7 @@ const schema = Yup.object().shape({
   title: Yup.string().required('Enter a title'),
 });
 
-const EditTemplate = ({
+const EditTemplatePage = ({
   apiKey,
   template,
 }: {
@@ -34,10 +34,13 @@ const EditTemplate = ({
   template: Template;
 }) => {
   const [title, setTitle] = useState(template.title);
-  const editor = useRef<Editor | null>(null);
+  const [templateFields, setTemplateFields] = useState<Set<string>>(new Set());
+  const [isEditingField, setIsEditingField] = useState(false);
 
+  const editor = useRef<Editor | null>(null);
   const router = useRouter();
   const { t } = useTranslation('common');
+
   const { team, isLoading, isError } = useTeam();
   const { data, status } = useSession();
 
@@ -137,7 +140,14 @@ const EditTemplate = ({
           </div>
         </div>
         <div id="editor-window">
-          <EditorComponent editorRef={editor} apiKey={apiKey} />
+          <EditorComponent
+            editorRef={editor}
+            apiKey={apiKey}
+            templateFields={templateFields}
+            setTemplateFields={setTemplateFields}
+            isEditingField={isEditingField}
+            setIsEditingField={setIsEditingField}
+          />
         </div>
       </div>
     </form>
@@ -166,4 +176,4 @@ export async function getServerSideProps({
   };
 }
 
-export default EditTemplate;
+export default EditTemplatePage;

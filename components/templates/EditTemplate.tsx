@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { Dispatch, SetStateAction, useEffect, useState } from 'react';
 import EditorComponent from '../Editor';
 import TemplateFields from './TemplateFields';
 
@@ -8,45 +8,63 @@ export default function EditTemplate({
   initialValue = '',
   templateFields,
   setTemplateFields,
+  isEditingField,
+  setIsEditingField,
 }: {
   editorRef: any;
   apiKey: string;
   initialValue?: string;
-  templateFields: string[];
-  setTemplateFields: any;
+  templateFields: Set<string>;
+  setTemplateFields: Dispatch<SetStateAction<Set<string>>>;
+  isEditingField: boolean;
+  setIsEditingField: Dispatch<SetStateAction<boolean>>;
 }) {
   const [currentField, setField] = useState<string | null>(null);
 
+  useEffect(() => {}, [templateFields]);
+
   function editTemplateField(previousField: string, field: string) {
-    const index = templateFields.indexOf(previousField);
-    if (index === -1) {
-      setTemplateFields((prevFields) => [...prevFields, field]);
-    } else {
-      // overwrite the prvioues index
-      setTemplateFields((prevFields) => {
-        const newFields = [...prevFields];
-        newFields[index] = field;
-        return newFields;
-      });
-    }
+    setTemplateFields((prevFields) => {
+      if (prevFields.has(previousField) && !prevFields.has(field)) {
+        console.info('overwriting field');
+        const fields = Array.from(prevFields);
+        const index = fields.indexOf(previousField);
+        fields[index] = field;
+        return new Set(fields);
+      } else if (!prevFields.has(previousField) && !prevFields.has(field)) {
+        console.info('adding new field');
+        return new Set(prevFields).add(field);
+      } else if (!prevFields.has(field)) {
+        console.info('adding new field');
+        return new Set(prevFields).add(field);
+      } else {
+        return new Set(prevFields);
+      }
+    });
   }
 
   function deleteTemplateField(field: string) {
-    setTemplateFields((prevFields: string[]) => {
-      return prevFields.filter((f) => f !== field);
+    setTemplateFields((prevFields) => {
+      const fields = Array.from(prevFields);
+      const index = fields.indexOf(field);
+      fields.splice(index, 1);
+      return new Set(fields);
     });
   }
 
   return (
     <div id="editor-window" className="space-y-2">
       <EditorComponent
+        templateFields={templateFields}
         initialValue={initialValue}
         editorRef={editorRef}
         apiKey={apiKey}
         currentField={currentField}
-        setField={setField}
+        setCurrentField={setField}
         editTemplateField={editTemplateField}
         deleteTemplateField={deleteTemplateField}
+        isEditingField={isEditingField}
+        setIsEditingField={setIsEditingField}
       />
       <TemplateFields
         currentField={currentField}
@@ -54,6 +72,8 @@ export default function EditTemplate({
         templateFields={templateFields}
         editTemplateField={editTemplateField}
         deleteTemplateField={deleteTemplateField}
+        isEditingField={isEditingField}
+        setIsEditingField={setIsEditingField}
       />
     </div>
   );

@@ -37,6 +37,8 @@ const ContentPage = () => {
 
   const content = data?.data || [];
 
+  const connectContent = async (content: Content) => {};
+
   const removeContent = async (team, content: Content) => {
     const response = await fetch(
       `/api/teams/${team.slug}/content?id=${content.id}`,
@@ -45,14 +47,11 @@ const ContentPage = () => {
         headers: defaultHeaders,
       }
     );
-
     const json = (await response.json()) as ApiResponse;
-
     if (!response.ok) {
       toast.error(json.error.message);
       return;
     }
-
     toast.success(t('leave-team-success'));
     mutate();
   };
@@ -64,7 +63,7 @@ const ContentPage = () => {
           <Contents
             contents={content}
             team={team}
-            // connectContent={connectContent}
+            connectContent={connectContent}
             removeContent={removeContent}
           />
         </div>

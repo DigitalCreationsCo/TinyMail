@@ -53,7 +53,7 @@ const TemplatesPage = () => {
       return;
     }
 
-    toast.success(t('leave-team-success'));
+    toast.success(t('remove-template-success'));
     mutate();
   };
 

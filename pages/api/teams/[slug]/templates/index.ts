@@ -1,12 +1,15 @@
 import { prisma } from '@/lib/prisma';
 import { sendAudit } from '@/lib/retraced';
-import {
-  throwIfNoTeamAccess,
-} from 'models/team';
+import { throwIfNoTeamAccess } from 'models/team';
 import { throwIfNotAllowed } from 'models/user';
 import type { NextApiRequest, NextApiResponse } from 'next';
 import { recordMetric } from '@/lib/metrics';
-import { createTemplate, deleteTemplate, getTeamTemplates } from 'models/template';
+import {
+  createTemplate,
+  deleteTemplate,
+  getTeamTemplates,
+} from 'models/template';
+import { Prisma } from '@prisma/client';
 
 export default async function handler(
   req: NextApiRequest,
@@ -50,7 +53,7 @@ const handleGET = async (req: NextApiRequest, res: NextApiResponse) => {
   const teamMember = await throwIfNoTeamAccess(req, res);
   throwIfNotAllowed(teamMember, 'team_templates', 'read');
 
-  const templates = await getTeamTemplates({teamId: teamMember.team.id });
+  const templates = await getTeamTemplates({ teamId: teamMember.team.id });
 
   recordMetric('template.fetched');
 
@@ -62,10 +65,17 @@ const handlePOST = async (req: NextApiRequest, res: NextApiResponse) => {
   const teamMember = await throwIfNoTeamAccess(req, res);
   throwIfNotAllowed(teamMember, 'team_templates', 'create');
 
-  const { title, description, content, backgroundColor, image } = req.body as { title: string; description: string; backgroundColor: string; content: string; image: string };
+  const { title, description, doc, backgroundColor, image } =
+    req.body as Prisma.TemplateCreateArgs['data'];
 
   const templateCreated = await createTemplate({
-    title, description, content, image, backgroundColor, teamId: teamMember.team.id, authorId: teamMember.user.id,
+    title,
+    description,
+    doc,
+    image,
+    backgroundColor,
+    teamId: teamMember.team.id,
+    authorId: teamMember.user.id,
   });
 
   sendAudit({
@@ -87,7 +97,7 @@ const handleDELETE = async (req: NextApiRequest, res: NextApiResponse) => {
 
   const { templateId } = req.query as { templateId: string };
 
-  await deleteTemplate({id: templateId});
+  await deleteTemplate({ id: templateId });
 
   // await sendEvent(teamMember.teamId, 'template.removed', templateRemoved);
 
@@ -108,16 +118,17 @@ const handlePATCH = async (req: NextApiRequest, res: NextApiResponse) => {
   const teamMember = await throwIfNoTeamAccess(req, res);
   throwIfNotAllowed(teamMember, 'team_templates', 'update');
 
-  const { id, title, description, content, backgroundColor, image } = req.body as { title: string, description: string, content: string, image: string, id: string, backgroundColor: string};
+  const { id, title, description, doc, backgroundColor, image } =
+    req.body as Prisma.TemplateUpdateArgs['data'];
 
   const templateUpdated = await prisma.template.update({
     where: {
-      id,
+      id: id as string,
     },
     data: {
       title,
       description,
-      content,
+      doc,
       backgroundColor,
       image,
     },

@@ -4,6 +4,7 @@ import {
   XCircleIcon,
   QuestionMarkCircleIcon,
 } from '@heroicons/react/24/outline';
+import { useTranslation } from 'next-i18next';
 
 const TemplateFields = ({
   templateFields,
@@ -11,31 +12,37 @@ const TemplateFields = ({
   deleteTemplateField,
   currentField,
   setField,
+  isEditingField,
+  setIsEditingField,
 }: {
-  templateFields: string[];
-  editTemplateField: (field: string) => void;
-  deleteTemplateField: (field: string) => void;
+  templateFields: Set<string>;
+  editTemplateField: any;
+  deleteTemplateField: any;
   currentField?: string | null;
   setField?: (field: string | null) => void;
+  isEditingField?: boolean;
+  setIsEditingField?: (isEditingField: boolean) => void;
 }) => {
   const [current, setCurrent] = useState(-1);
+
+  const { t } = useTranslation('common');
+
   return (
     <div>
-      <p className="font-semibold">Template Fields</p>
-      {templateFields.map((field, index) => {
-        return (
-          <TemplateFieldButton
-            current={current}
-            key={index}
-            index={index}
-            field={field}
-            editTemplateField={editTemplateField}
-            deleteTemplateField={deleteTemplateField}
-            currentField={currentField}
-            setField={setField}
-          />
-        );
-      })}
+      <p className="font-semibold">{t('template-fields')}</p>
+      {Array.from(templateFields).map((field, index) => (
+        <TemplateFieldButton
+          key={`field-${field}-${index}`}
+          current={current}
+          field={field}
+          index={index}
+          editTemplateField={editTemplateField}
+          deleteTemplateField={deleteTemplateField}
+          currentField={currentField}
+          setField={setField}
+          setIsEditingField={setIsEditingField}
+        />
+      ))}
     </div>
   );
 };
@@ -50,14 +57,16 @@ const TemplateFieldButton = ({
   index,
   currentField,
   setField,
+  setIsEditingField,
 }: {
   current: number;
   field: string;
-  index: number;
+  index?: number;
   editTemplateField: any;
   deleteTemplateField: any;
   currentField?: string | null;
   setField?: (field: string | null) => void;
+  setIsEditingField?: (isEditingField: boolean) => void;
 }) => {
   const [reallyDelete, setReallyDelete] = useState(false);
   const deleteField = (field: string) => {
@@ -76,12 +85,13 @@ const TemplateFieldButton = ({
       className={classNames(
         'border p-2 rounded-full h-10',
         'flex flex-row items-center gap-x-2',
-        current === index ? 'bg-blue-200' : 'bg-gray-100'
+        currentField === field ? 'bg-blue-200' : 'bg-gray-100'
       )}
       onClick={(e: any) => {
         e.preventDefault();
         e.stopPropagation();
         setField?.(field);
+        setIsEditingField?.(true);
       }}
     >
       {field}

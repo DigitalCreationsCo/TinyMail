@@ -1,7 +1,8 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import { Template } from '@prisma/client';
 import { Editor } from '@tinymce/tinymce-react';
-import { MutableRefObject, Ref, useEffect } from 'react';
+import { MutableRefObject, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 
 export default function EditorComponent({
   editorRef,
@@ -11,8 +12,12 @@ export default function EditorComponent({
   editTemplateField,
   deleteTemplateField,
   currentField,
-  setField,
+  setCurrentField,
+  isEditingField,
+  setIsEditingField,
+  templateFields,
 }: {
+  templateFields: Set<string>;
   editorRef: MutableRefObject<Editor | null>;
   apiKey: string;
   template?: Template;
@@ -20,58 +25,84 @@ export default function EditorComponent({
   editTemplateField?: any;
   deleteTemplateField?: any;
   currentField?: string | null;
-  setField?: (field: string | null) => void;
+  setCurrentField?: (field: string | null) => void;
+  isEditingField?: boolean;
+  setIsEditingField?: (isEditingField: boolean) => void;
 }) {
-  // useEffect(() => {
-  //   if (currentField) {
-  //     // get element by id
-  //     const element = (
-  //       editorRef.current?.editor?.dom.select(
-  //         `#${currentField}`
-  //       ) as HTMLElement[]
-  //     )[0];
-  //     // open editTemplateField dialog
-  //     editorRef.current?.editor?.windowManager.open({
-  //       title: 'Edit Template Field',
-  //       body: {
-  //         type: 'panel',
-  //         items: [
-  //           {
-  //             type: 'input',
-  //             name: 'id',
-  //             label: 'Field ID',
-  //           },
-  //         ],
-  //       },
-  //       buttons: [
-  //         {
-  //           type: 'cancel',
-  //           name: 'cancel',
-  //           text: 'Cancel',
-  //         },
-  //         {
-  //           type: 'submit',
-  //           name: 'submit',
-  //           text: 'Save',
-  //           primary: true,
-  //         },
-  //       ],
-  //       initialData: { id: '' },
-  //       onSubmit: (api) => {
-  //         const data = api.getData();
-  //         // add id attribute to selected block
-  //         editTemplateField?.(element.id, data.id);
-  //         element.id = data.id;
-  //         api.close();
-  //       },
-  //     });
-  //     setField?.(null);
-  //   }
-  // }, [
-  //   currentField,
-  //   setField,
-  //   // editorRef, editTemplateField
-  // ]);
+  const { t } = useTranslation('common');
+
+  useEffect(() => {
+    if (currentField && isEditingField) {
+      console.info('current Field: , ', currentField);
+      // get element by id
+      const element = (
+        editorRef.current?.editor?.dom.select(
+          `#${currentField}`
+        ) as HTMLElement[]
+      )[0];
+      // open editTemplateField dialog
+      editorRef.current?.editor?.windowManager.open({
+        title: 'Edit Template Field',
+        body: {
+          type: 'panel',
+          items: [
+            {
+              type: 'input',
+              name: 'id',
+              label: 'Field ID',
+              placeholder: currentField,
+            },
+          ],
+        },
+        buttons: [
+          {
+            type: 'cancel',
+            name: 'cancel',
+            text: 'Cancel',
+          },
+          {
+            type: 'submit',
+            name: 'submit',
+            text: 'Save',
+            primary: true,
+          },
+        ],
+        initialData: { id: '' },
+        onSubmit: (api) => {
+          const data = api.getData();
+
+          // regex allows only alphanumeric characters and dashes and numbers, and can only start with alphabet characters
+          const regex = /^[a-zA-Z][a-zA-Z0-9-]*$/;
+
+          if (data.id === '' || !regex.test(data.id)) {
+            // dont allow submit
+            return;
+          }
+
+          // console.info('templatefields has: ', templateFields);
+          // // don't allow if the template field exists
+          // if (templateFields.has(data.id)) {
+          //   return;
+          // }
+
+          editTemplateField?.(element.id, data.id);
+          // if (editTemplateField?.(selectedBlock.id, data.id)) {
+          //   selectedBlock.id = data.id;
+          // }
+          // add id attribute to selected block
+          element.id = data.id;
+          api.close();
+        },
+      });
+      setIsEditingField?.(false);
+      setCurrentField?.(null);
+    }
+  }, [
+    currentField,
+    setCurrentField,
+    isEditingField,
+    // editorRef, editTemplateField
+  ]);
 
   // useEffect(() => {}, [deleteTemplateField]);
   return (
@@ -141,6 +172,15 @@ export default function EditorComponent({
                 template?.backgroundColor || '';
             });
 
+            // on select, set the currentField to id of the selected element
+            editor.on('NodeChange', (e) => {
+              const element = e.element;
+              if (element.id !== 'tinymce') {
+                console.info('element.id: ', element.id);
+                setCurrentField?.(element.id || null);
+              }
+            });
+
             editor.ui.registry.addButton('output', {
               text: 'Output',
               onAction: () => {
@@ -164,6 +204,7 @@ export default function EditorComponent({
                         type: 'input',
                         name: 'id',
                         label: 'Field ID',
+                        placeholder: currentField || t('set-field-name'),
                       },
                     ],
                   },
@@ -183,14 +224,35 @@ export default function EditorComponent({
                   initialData: { id: '' },
                   onSubmit: (api) => {
                     const data = api.getData();
+
+                    // regex allows only alphanumeric characters and dashes and numbers, and can only start with alphabet characters
+                    const regex = /^[a-zA-Z][a-zA-Z0-9-]*$/;
+
+                    if (data.id === '' || !regex.test(data.id)) {
+                      // dont allow submit
+                      return;
+                    }
+
+                    console.info('templatefields has: ', templateFields);
+                    // don't allow if the template field exists
+                    // if (templateFields.has(data.id)) {
+                    //   return;
+                    // }
+
                     // add id attribute to selected block
                     const selection = editor.selection;
                     const selectedBlock = selection.getNode();
-                    console.info('selection: ', selectedBlock.id, data.id);
-                    // if (selectedBlock.id !== data.id) {
-                    // }
-                    editTemplateField?.(selectedBlock.id, data.id);
-                    selectedBlock.id = data.id;
+                    if (selectedBlock.id !== data.id) {
+                      console.info('ids are not equal');
+                      console.info('selectedBlock.id: ', selectedBlock.id);
+                      console.info('data.id: ', data.id);
+                      // if (editTemplateField?.(selectedBlock.id, data.id)) {
+                      //   selectedBlock.id = data.id;
+                      // }
+                      editTemplateField?.(selectedBlock.id, data.id);
+                      selectedBlock.id = data.id;
+                      setIsEditingField?.(false);
+                    }
                     api.close();
                   },
                 });
