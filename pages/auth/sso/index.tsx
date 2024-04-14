@@ -69,7 +69,7 @@ const SSO: NextPageWithLayout<
               type="text"
               label="Team slug"
               name="slug"
-              placeholder="boxyhq"
+              placeholder="tinymail"
               value={formik.values.slug}
               descriptionText="Contact your administrator to get your team slug"
               error={formik.touched.slug ? formik.errors.slug : undefined}

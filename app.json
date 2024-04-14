@@ -1,9 +1,9 @@
 {
-  "name": "BoxyHQ Enterprise SaaS Starter Kit",
-  "description": "The Open Source Next.js Enterprise SaaS Starter Kit. Next.js based SaaS starter kit that saves you months of development by starting you off with all the features that are the same in every product, so you can focus on what makes your app unique.",
-  "repository": "https://github.com/boxyhq/saas-starter-kit",
-  "logo": "https://boxyhq.com/img/logo.png",
-  "keywords": ["saas", "starter", "kit", "enterprise"],
+  "name": "Tiny Mail",
+  "description": "Tiny Mail is a simple email automation tool for creators and businesses.",
+  "repository": "https://github.com/DigitalCreationsCo/TinyMail",
+  "logo": "./public/logo.png",
+  "keywords": ["saas", "email", "newsletter", "automation", "template"],
   "env": {
     "NEXTAUTH_URL": {
       "description": "Next.js authentication URL."
@@ -30,7 +30,7 @@
       "description": "Hosted Database URL."
     },
     "APP_URL": {
-      "description": "Public root URL of the Enterprise SaaS installation, replace <HEROKU_APP_NAME> with the app name.",
+      "description": "Public root URL of the SaaS installation, replace <HEROKU_APP_NAME> with the app name.",
       "value": "https://<HEROKU_APP_NAME>.herokuapp.com"
     },
     "SVIX_URL": {

@@ -4,13 +4,13 @@ import { prisma } from '@/lib/prisma';
 
 const user = {
   name: 'Jackson',
-  email: 'jackson@boxyhq.com',
+  email: 'jackson@tinymail.com',
   password: 'password',
 } as const;
 
 const team = {
-  name: 'BoxyHQ',
-  slug: 'boxyhq',
+  name: 'TinyMail',
+  slug: 'tinymail',
 } as const;
 
 test('Should signup a new user', async ({ page }) => {
@@ -21,7 +21,7 @@ test('Should signup a new user', async ({ page }) => {
   ).toBeVisible();
   await page.getByPlaceholder('Your name').fill(user.name);
   await page.getByPlaceholder('Team Name').fill(team.name);
-  await page.getByPlaceholder('example@boxyhq.com').fill(user.email);
+  await page.getByPlaceholder('example@tinymail.com').fill(user.email);
   await page.getByPlaceholder('Password').fill(user.password);
   await page.getByRole('button', { name: 'Create Account' }).click();
   await page.waitForURL('/auth/login');
