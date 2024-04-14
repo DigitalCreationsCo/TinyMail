@@ -28,7 +28,7 @@ export default async function middleware(req: NextRequest) {
 
   // Bypass routes that don't require authentication
   if (micromatch.isMatch(pathname, unAuthenticatedRoutes)) {
-    console.info('Bypassing authentication for', pathname)
+    console.info('Bypassing authentication for', pathname);
     console.info(micromatch.isMatch(pathname, unAuthenticatedRoutes));
     return NextResponse.next();
   }
@@ -43,10 +43,9 @@ export default async function middleware(req: NextRequest) {
     });
 
     if (!token) {
-      if (!req.nextUrl.pathname.startsWith('/auth')){
+      if (!req.nextUrl.pathname.startsWith('/auth')) {
         return NextResponse.next();
-      }
-      else return NextResponse.redirect(redirectUrl);
+      } else return NextResponse.redirect(redirectUrl);
     }
   }
 
@@ -73,5 +72,7 @@ export default async function middleware(req: NextRequest) {
 }
 
 export const config = {
-  matcher: ['/((?!_next/static|_next/image|favicon.ico|api/auth/session|api/auth/csrf).*)'],
+  matcher: [
+    '/((?!_next/static|_next/image|favicon.ico|api/auth/session|api/auth/csrf).*)',
+  ],
 };

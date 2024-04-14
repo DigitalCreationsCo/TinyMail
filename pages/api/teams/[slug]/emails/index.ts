@@ -1,8 +1,6 @@
 import { prisma } from '@/lib/prisma';
 import { sendAudit } from '@/lib/retraced';
-import {
-  throwIfNoTeamAccess,
-} from 'models/team';
+import { throwIfNoTeamAccess } from 'models/team';
 import { throwIfNotAllowed } from 'models/user';
 import type { NextApiRequest, NextApiResponse } from 'next';
 import { recordMetric } from '@/lib/metrics';
@@ -47,7 +45,7 @@ const handleGET = async (req: NextApiRequest, res: NextApiResponse) => {
   const teamMember = await throwIfNoTeamAccess(req, res);
   throwIfNotAllowed(teamMember, 'team_emails', 'read');
 
-  const emails = await getTeamEmails({teamId: teamMember.team.id });
+  const emails = await getTeamEmails({ teamId: teamMember.team.id });
 
   recordMetric('email.fetched');
 
@@ -59,10 +57,22 @@ const handlePOST = async (req: NextApiRequest, res: NextApiResponse) => {
   const teamMember = await throwIfNoTeamAccess(req, res);
   throwIfNotAllowed(teamMember, 'team_emails', 'create');
 
-  const { title, description, doc, backgroundColor, image } = req.body as { title: string; description: string; backgroundColor: string; doc: string; image: string };
+  const { title, description, doc, backgroundColor, image } = req.body as {
+    title: string;
+    description: string;
+    backgroundColor: string;
+    doc: string;
+    image: string;
+  };
 
   const emailCreated = await createEmail({
-    title, description, doc, image, backgroundColor, teamId: teamMember.team.id, authorId: teamMember.user.id,
+    title,
+    description,
+    doc,
+    image,
+    backgroundColor,
+    teamId: teamMember.team.id,
+    authorId: teamMember.user.id,
   });
 
   sendAudit({
@@ -81,7 +91,7 @@ const handlePOST = async (req: NextApiRequest, res: NextApiResponse) => {
 const handleDELETE = async (req: NextApiRequest, res: NextApiResponse) => {
   const { id } = req.query as { id: string };
 
-  await deleteEmail({id});
+  await deleteEmail({ id });
 
   recordMetric('email.removed');
 
@@ -93,7 +103,14 @@ const handlePATCH = async (req: NextApiRequest, res: NextApiResponse) => {
   const teamMember = await throwIfNoTeamAccess(req, res);
   throwIfNotAllowed(teamMember, 'team_emails', 'update');
 
-  const { id, title, description, doc, backgroundColor, image } = req.body as { title: string, description: string, doc: string, image: string, id: string, backgroundColor: string};
+  const { id, title, description, doc, backgroundColor, image } = req.body as {
+    title: string;
+    description: string;
+    doc: string;
+    image: string;
+    id: string;
+    backgroundColor: string;
+  };
 
   const emailUpdated = await prisma.email.update({
     where: {

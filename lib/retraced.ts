@@ -33,7 +33,7 @@ export type EventType =
   | 'integration.mailchimp.create'
   | 'integration.mailchimp.delete'
   | 'integration.mailchimp.update';
-  
+
 type Request = {
   action: EventType;
   user: User;

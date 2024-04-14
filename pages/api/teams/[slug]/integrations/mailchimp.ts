@@ -1,12 +1,13 @@
 import { prisma } from '@/lib/prisma';
 import { sendAudit } from '@/lib/retraced';
-import {
-  throwIfNoTeamAccess,
-} from 'models/team';
+import { throwIfNoTeamAccess } from 'models/team';
 import { throwIfNotAllowed } from 'models/user';
 import type { NextApiRequest, NextApiResponse } from 'next';
 import { recordMetric } from '@/lib/metrics';
-import { deleteMailChimpKey, getMailChimpKey } from 'models/integrations/mailchimp';
+import {
+  deleteMailChimpKey,
+  getMailChimpKey,
+} from 'models/integrations/mailchimp';
 
 export default async function handler(
   req: NextApiRequest,
@@ -67,7 +68,10 @@ const handlePUT = async (req: NextApiRequest, res: NextApiResponse) => {
   const teamMember = await throwIfNoTeamAccess(req, res);
   throwIfNotAllowed(teamMember, 'team_integrations', 'update');
 
-  const { id, mailchimpApiKey } = req.body as { id: string; mailchimpApiKey: string };
+  const { id, mailchimpApiKey } = req.body as {
+    id: string;
+    mailchimpApiKey: string;
+  };
 
   const mailChimpKeyUpdate = await prisma.user.update({
     where: { id },
@@ -75,8 +79,8 @@ const handlePUT = async (req: NextApiRequest, res: NextApiResponse) => {
       mailchimpApiKey,
     },
     select: {
-        mailchimpApiKey: true,
-    }
+      mailchimpApiKey: true,
+    },
   });
 
   sendAudit({

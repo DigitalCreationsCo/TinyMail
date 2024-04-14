@@ -124,7 +124,7 @@ const TeamTab = ({ activeTab, team, heading, teamFeatures }: TeamTabProps) => {
       icon: KeyIcon,
     });
   }
-  
+
   return (
     <div className="flex flex-col pb-6">
       <h2 className="text-xl font-semibold mb-2">

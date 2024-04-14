@@ -1,6 +1,4 @@
-import {
-  throwIfNoTeamAccess,
-} from 'models/team';
+import { throwIfNoTeamAccess } from 'models/team';
 import { throwIfNotAllowed } from 'models/user';
 import type { NextApiRequest, NextApiResponse } from 'next';
 import { recordMetric } from '@/lib/metrics';
@@ -48,7 +46,7 @@ const handleGET = async (req: NextApiRequest, res: NextApiResponse) => {
   const teamMember = await throwIfNoTeamAccess(req, res);
   throwIfNotAllowed(teamMember, 'team_templates', 'read');
 
-  const template = await getTemplate({id: req.query.id as string});
+  const template = await getTemplate({ id: req.query.id as string });
 
   recordMetric('template.fetched');
 
@@ -57,8 +55,7 @@ const handleGET = async (req: NextApiRequest, res: NextApiResponse) => {
 
 // Delete a template from the team
 const handleDELETE = async (req: NextApiRequest, res: NextApiResponse) => {
-
-  await deleteTemplate({id: req.query.id as string});
+  await deleteTemplate({ id: req.query.id as string });
 
   recordMetric('template.removed');
 

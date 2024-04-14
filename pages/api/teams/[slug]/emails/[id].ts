@@ -1,6 +1,4 @@
-import {
-  throwIfNoTeamAccess,
-} from 'models/team';
+import { throwIfNoTeamAccess } from 'models/team';
 import { throwIfNotAllowed } from 'models/user';
 import type { NextApiRequest, NextApiResponse } from 'next';
 import { recordMetric } from '@/lib/metrics';
@@ -39,7 +37,7 @@ const handleGET = async (req: NextApiRequest, res: NextApiResponse) => {
   const teamMember = await throwIfNoTeamAccess(req, res);
   throwIfNotAllowed(teamMember, 'team_emails', 'read');
 
-  const email = await getEmail({id: req.query.id as string});
+  const email = await getEmail({ id: req.query.id as string });
 
   recordMetric('email.fetched');
 
@@ -48,8 +46,7 @@ const handleGET = async (req: NextApiRequest, res: NextApiResponse) => {
 
 // Delete a email from the team
 const handleDELETE = async (req: NextApiRequest, res: NextApiResponse) => {
-
-  await deleteEmail({id: req.query.id as string});
+  await deleteEmail({ id: req.query.id as string });
 
   recordMetric('email.removed');
 

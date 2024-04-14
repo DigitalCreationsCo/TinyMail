@@ -21,19 +21,21 @@ const Templates = ({ templates, team, removeTemplate }: TemplatesProps) => {
 
   return (
     <div className="space-y-3">
-        <div className="flex justify-between items-center">
-
-      <h2 className="text-xl font-semibold mb-2">
-        {t('email-templates')}
-      </h2>
-         <Button
-            color="primary"
-            size="md"
-            onClick={() => router.push('/teams/[slug]/templates/create', `/teams/${team.slug}/templates/create`)}
-          >
-            {t('create-template')}
-          </Button>
-        </div>
+      <div className="flex justify-between items-center">
+        <h2 className="text-xl font-semibold mb-2">{t('email-templates')}</h2>
+        <Button
+          color="primary"
+          size="md"
+          onClick={() =>
+            router.push(
+              '/teams/[slug]/templates/create',
+              `/teams/${team.slug}/templates/create`
+            )
+          }
+        >
+          {t('create-template')}
+        </Button>
+      </div>
 
       <table className="table w-full text-sm border">
         <thead>
@@ -47,26 +49,41 @@ const Templates = ({ templates, team, removeTemplate }: TemplatesProps) => {
         </thead>
         <tbody>
           {templates.map((template) => (
-            <tr className="cursor-pointer" key={template.id} onClick={() => router.push('/teams/[slug]/templates[id]/edit', `/teams/${team.slug}/templates/${template.id}/edit`)}>
+            <tr
+              className="cursor-pointer"
+              key={template.id}
+              onClick={() =>
+                router.push(
+                  '/teams/[slug]/templates[id]/edit',
+                  `/teams/${team.slug}/templates/${template.id}/edit`
+                )
+              }
+            >
               <td>
-                <Image src={decodeURIComponent(template.image as string)} alt={template.title} width={100} height={100} />
-                </td>
+                <Image
+                  src={decodeURIComponent(template.image as string)}
+                  alt={template.title}
+                  width={100}
+                  height={100}
+                />
+              </td>
               <td>{template.id}</td>
               <td>{template.title}</td>
               <td>{new Date(template.createdAt).toLocaleDateString()}</td>
               <td>{new Date(template.updatedAt).toLocaleDateString()}</td>
               <td>
-              <Button
-                color="error"
-                size="sm"
-                onClick={(e) => {
-                  e.preventDefault();
-                  e.stopPropagation();
-                  setTemplate(template);
-                  setAskConfirmation(true);
-                }}>
+                <Button
+                  color="error"
+                  size="sm"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    setTemplate(template);
+                    setAskConfirmation(true);
+                  }}
+                >
                   {t('remove-template')}
-              </Button>
+                </Button>
               </td>
             </tr>
           ))}

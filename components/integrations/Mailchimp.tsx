@@ -10,10 +10,10 @@ import type { ApiResponse } from 'types';
 import MailChimpDialog from '../shared/MailChimpDialog';
 import mailchimpAPi from '@mailchimp/mailchimp_transactional';
 
-interface MailchimpProps { 
-  apiKey: string
-  team: Team
-  user: User
+interface MailchimpProps {
+  apiKey: string;
+  team: Team;
+  user: User;
 }
 
 const Mailchimp = ({ team, user, apiKey: _key }: MailchimpProps) => {
@@ -24,7 +24,6 @@ const Mailchimp = ({ team, user, apiKey: _key }: MailchimpProps) => {
   const { t } = useTranslation('common');
 
   const connectMailChimp = async () => {
-
     if (!apiKey || apiKey.length === 0) {
       throw new Error('mailchimp-api-key-required');
     }
@@ -33,28 +32,28 @@ const Mailchimp = ({ team, user, apiKey: _key }: MailchimpProps) => {
       const mailchimp = mailchimpAPi(apiKey);
       const pingResponse = await mailchimp.users.ping();
 
-      if (pingResponse!== 'PONG!') {
+      if (pingResponse !== 'PONG!') {
         throw new Error(t('mailchimp-api-key-invalid'));
       }
 
-    const response = await fetch(
-      `/api/teams/${team.slug}/integrations/mailchimp`,
-      {
-        body: JSON.stringify({ id: user.id, mailchimpApiKey: apiKey }),
-        method: 'PUT',
-        headers: defaultHeaders,
-        credentials: 'same-origin',
+      const response = await fetch(
+        `/api/teams/${team.slug}/integrations/mailchimp`,
+        {
+          body: JSON.stringify({ id: user.id, mailchimpApiKey: apiKey }),
+          method: 'PUT',
+          headers: defaultHeaders,
+          credentials: 'same-origin',
+        }
+      );
+
+      const result = (await response.json()) as ApiResponse<{ url: string }>;
+
+      if (!response.ok) {
+        throw new Error(result.error.message);
       }
-    );
-
-    const result = (await response.json()) as ApiResponse<{ url: string }>;
-
-    if (!response.ok) {
-      throw new Error(result.error.message);
-    }
 
       console.log(response);
-      toast(t('mailchimp-connected'))
+      toast(t('mailchimp-connected'));
       window.location.reload();
     } catch (error: any) {
       console.info('error: ', error);
@@ -65,24 +64,32 @@ const Mailchimp = ({ team, user, apiKey: _key }: MailchimpProps) => {
 
   return (
     <>
-    <Card>
-      <Card.Body>
-        <div>
-          <Button
-            type="button"
-            variant="link"
-            onClick={(e) => {
-              e.preventDefault();
-              e.stopPropagation();
-              setAskConfirmation(true);
-            }}
-          >
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src="/mailchimp.png" alt={t('mailchimp')} width='auto' style={{ opacity: showOpacityActive, backgroundColor: 'transparent'}} />
-          </Button>
-        </div>
-      </Card.Body>
-    </Card>
+      <Card>
+        <Card.Body>
+          <div>
+            <Button
+              type="button"
+              variant="link"
+              onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                setAskConfirmation(true);
+              }}
+            >
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src="/mailchimp.png"
+                alt={t('mailchimp')}
+                width="auto"
+                style={{
+                  opacity: showOpacityActive,
+                  backgroundColor: 'transparent',
+                }}
+              />
+            </Button>
+          </div>
+        </Card.Body>
+      </Card>
       <MailChimpDialog
         apiKey={apiKey}
         setApiKey={setApiKey}

@@ -25,7 +25,6 @@ const MailChimpDialog = ({
   confirmText,
   cancelText,
 }: MailChimpDialogProps) => {
-
   const [loading, setLoading] = useState(false);
   const { t } = useTranslation('common');
 
@@ -42,24 +41,41 @@ const MailChimpDialog = ({
   return (
     <Modal open={visible} close={onCancel}>
       {/* eslint-disable-next-line i18next/no-literal-string, i18next/no-literal-string, i18next/no-literal-string */}
-      <Modal.Header>{t('mailchimp-use-api-key')} <a href={'https://mandrillapp.com/login/?referrer=%2Fsettings%2Findex%2F'} target='_blank' className='link'>What is Mandrill?</a></Modal.Header>
+      <Modal.Header>
+        {t('mailchimp-use-api-key')}{' '}
+        <a
+          href={
+            'https://mandrillapp.com/login/?referrer=%2Fsettings%2Findex%2F'
+          }
+          target="_blank"
+          className="link"
+        >
+          What is Mandrill?
+        </a>
+      </Modal.Header>
       <Modal.Body className="text-sm leading-6">
-          <InputWithLabel
+        <InputWithLabel
           label={t('mailchimp')}
           name="mailchimp"
-          aria-label='Mailchimp API Key'
-            value={apiKey}
-            onChange={(e) => setApiKey(e.target.value)}
-            className="w-full max-w-md text-sm"
-            required
-            // disabled={!allowEmailChange}
-          />
+          aria-label="Mailchimp API Key"
+          value={apiKey}
+          onChange={(e) => setApiKey(e.target.value)}
+          className="w-full max-w-md text-sm"
+          required
+          // disabled={!allowEmailChange}
+        />
       </Modal.Body>
       <Modal.Footer>
         <Button type="button" variant="outline" onClick={onCancel} size="md">
           {cancelText || t('cancel')}
         </Button>
-        <Button loading={loading} type="button" color="error" onClick={handleSubmit} size="md">
+        <Button
+          loading={loading}
+          type="button"
+          color="error"
+          onClick={handleSubmit}
+          size="md"
+        >
           {confirmText || t('save-changes')}
         </Button>
       </Modal.Footer>

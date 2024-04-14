@@ -73,8 +73,7 @@ export type AppEvent =
   | 'integration.created'
   | 'integration.removed'
   | 'integration.fetched'
-  | 'integration.updated'
-  ;
+  | 'integration.updated';
 
 export type AUTH_PROVIDER =
   | 'github'

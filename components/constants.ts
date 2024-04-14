@@ -1,3 +1,3 @@
 export const CONSTANTS = {
-    appName: "TinyMail"
-}
+  appName: 'TinyMail',
+};

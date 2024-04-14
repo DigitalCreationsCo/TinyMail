@@ -1,4 +1,9 @@
-import { Cog6ToothIcon, EnvelopeIcon, EnvelopeOpenIcon, BookOpenIcon } from '@heroicons/react/24/outline';
+import {
+  Cog6ToothIcon,
+  EnvelopeIcon,
+  EnvelopeOpenIcon,
+  BookOpenIcon,
+} from '@heroicons/react/24/outline';
 import { useTranslation } from 'next-i18next';
 import NavigationItems from './NavigationItems';
 import { NavigationProps, MenuItem } from './NavigationItems';

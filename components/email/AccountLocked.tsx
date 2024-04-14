@@ -25,7 +25,8 @@ const AccountLocked = ({ subject, url }: AccountLockedProps) => {
       <EmailLayout>
         <Heading as="h2">Account Locked</Heading>
         <Text>
-          Your {app.name} account has been locked due to too many failed login attempts.
+          Your {app.name} account has been locked due to too many failed login
+          attempts.
         </Text>
         <Text>Please click the button below to unlock your account.</Text>
         <Container className="text-center">
