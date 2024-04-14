@@ -38,23 +38,26 @@ const IntegrationsPage = ({ teamFeatures, user }) => {
             teamFeatures={teamFeatures}
           />
 
-            <div className="space-y-3">
-                <div className="flex justify-between items-center">
-                    <div className="space-y-3">
-                    <h2 className="text-xl font-medium leading-none tracking-tight">
-                        {t('integrations')}
-                    </h2>
-                    <p className="text-sm text-gray-500 dark:text-gray-400">
-                        {t('integrations-description')}
-                    </p>
-                    </div>
-                </div>
-
-
-                <div className="grid gap-6 grid-cols-4">
-                    <Mailchimp team={team} user={user} apiKey={user.mailchimpApiKey} />
-                </div>
+          <div className="space-y-3">
+            <div className="flex justify-between items-center">
+              <div className="space-y-3">
+                <h2 className="text-xl font-medium leading-none tracking-tight">
+                  {t('integrations')}
+                </h2>
+                <p className="text-sm text-gray-500 dark:text-gray-400">
+                  {t('integrations-description')}
+                </p>
+              </div>
             </div>
+
+            <div className="grid gap-6 grid-cols-4">
+              <Mailchimp
+                team={team}
+                user={user}
+                apiKey={user.mailchimpApiKey}
+              />
+            </div>
+          </div>
           {/* <ProductPricing plans={plans} subscriptions={subscriptions} /> */}
         </>
       )}
@@ -63,7 +66,9 @@ const IntegrationsPage = ({ teamFeatures, user }) => {
 };
 
 export async function getServerSideProps({
-  locale, req, res
+  locale,
+  req,
+  res,
 }: GetServerSidePropsContext) {
   if (!env.teamFeatures.integrations) {
     return {

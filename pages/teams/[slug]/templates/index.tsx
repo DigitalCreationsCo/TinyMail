@@ -47,12 +47,10 @@ const TemplatesPage = () => {
     );
 
     const json = (await response.json()) as ApiResponse;
-
     if (!response.ok) {
       toast.error(json.error.message);
       return;
     }
-
     toast.success(t('remove-template-success'));
     mutate();
   };

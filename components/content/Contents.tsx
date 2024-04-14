@@ -1,28 +1,19 @@
 import { useTranslation } from 'next-i18next';
-import { Team, Content } from '@prisma/client';
+import { ContentMap, Team } from '@prisma/client';
 import { Button } from 'react-daisyui';
 import { useRouter } from 'next/router';
 import ConfirmationDialog from '../shared/ConfirmationDialog';
 import { useState } from 'react';
-import ConnectContentDialog from '../shared/ConnectContentDialog';
 
 interface ContentProps {
-  contents: Content[];
+  contents: ContentMap[];
   team: Team;
-  removeContent: (team: Team, content: Content) => void;
-  connectContent: (content: Content) => void;
+  removeContent: (team: Team, content: ContentMap) => void;
 }
 
-const Contents = ({
-  contents,
-  team,
-  removeContent,
-  connectContent,
-}: ContentProps) => {
+const Contents = ({ contents, team, removeContent }: ContentProps) => {
   const [askConfirmation, setAskConfirmation] = useState(false);
-  const [openConnectContentDialog, setOpenConnectContentDialog] =
-    useState(false);
-  const [content, setContent] = useState<Content | null>(null);
+  const [content, setContent] = useState<ContentMap | null>(null);
 
   const { t } = useTranslation('common');
   const router = useRouter();
@@ -32,13 +23,17 @@ const Contents = ({
       <div className="flex justify-between items-center">
         <div>
           <h2 className="text-xl font-semibold mb-2">{t('content')}</h2>
-          <p>{t('connect-content-source')}</p>
         </div>
 
         <Button
           color="primary"
           size="md"
-          onClick={() => setOpenConnectContentDialog(true)}
+          onClick={() =>
+            router.push(
+              '/teams/[slug]/content/create',
+              `/teams/${team.slug}/content/create`
+            )
+          }
         >
           {t('connect-content')}
         </Button>
@@ -104,13 +99,6 @@ const Contents = ({
       >
         {t('remove-content-confirmation')}
       </ConfirmationDialog>
-
-      <ConnectContentDialog
-        confirmText={t('connect-content')}
-        visible={openConnectContentDialog}
-        onCancel={() => setOpenConnectContentDialog(false)}
-        onConfirm={connectContent}
-      />
     </div>
   );
 };

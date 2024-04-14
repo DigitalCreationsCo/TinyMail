@@ -1,6 +1,4 @@
-import {
-  throwIfNoTeamAccess,
-} from 'models/team';
+import { throwIfNoTeamAccess } from 'models/team';
 import { throwIfNotAllowed } from 'models/user';
 import type { NextApiRequest, NextApiResponse } from 'next';
 import { recordMetric } from '@/lib/metrics';
@@ -27,7 +25,7 @@ export default async function handler(
         await handlePATCH(req, res);
         break;
       default:
-        res.setHeader('Allow', 'GET');
+        res.setHeader('Allow', 'GET, DELETE, PATCH');
         res.status(405).json({
           error: { message: `Method ${method} Not Allowed` },
         });
@@ -45,7 +43,7 @@ const handleGET = async (req: NextApiRequest, res: NextApiResponse) => {
   const teamMember = await throwIfNoTeamAccess(req, res);
   throwIfNotAllowed(teamMember, 'team_content', 'read');
 
-  const content = await getContent({id: req.query.id as string});
+  const content = await getContent({ id: req.query.id as string });
 
   recordMetric('content.fetched');
 
@@ -59,7 +57,7 @@ const handleDELETE = async (req: NextApiRequest, res: NextApiResponse) => {
 
   const { id } = req.query as { id: string };
 
-  const contentRemoved = await deleteContent({id});
+  const contentRemoved = await deleteContent({ id });
 
   await sendEvent(teamMember.teamId, 'content.removed', contentRemoved);
 

@@ -30,9 +30,9 @@ const CreateTemplatePage = ({ apiKey }: { apiKey: string }) => {
   const [templateFields, setTemplateFields] = useState<Set<string>>(new Set());
   const [isEditingField, setIsEditingField] = useState(false);
 
+  const editor = useRef<Editor | null>(null);
   const router = useRouter();
   const { t } = useTranslation('common');
-  const editor = useRef<Editor | null>(null);
 
   const { isLoading, isError, team } = useTeam();
   const { status, data } = useSession();
@@ -50,7 +50,7 @@ const CreateTemplatePage = ({ apiKey }: { apiKey: string }) => {
       authorId: '',
     },
     onSubmit: async (values) => {
-      console.info('submit');
+      console.info('values ', values);
       const saveTemplate: Prisma.TemplateCreateArgs['data'] = {
         title: values.title,
         description: '',
@@ -70,7 +70,6 @@ const CreateTemplatePage = ({ apiKey }: { apiKey: string }) => {
         authorId: user.id,
       };
 
-      console.info('saveTemplate: ', saveTemplate);
       validateYupSchema(saveTemplate, schema);
 
       const response = await fetch(`/api/teams/${team!.slug}/templates`, {
@@ -127,7 +126,7 @@ const CreateTemplatePage = ({ apiKey }: { apiKey: string }) => {
               <input
                 name="title"
                 placeholder="New Template"
-                className="p-2 w-32"
+                className="p-2 min-w-32 w-fit"
                 value={formik.values.title}
                 onChange={formik.handleChange}
               />

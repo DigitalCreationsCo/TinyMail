@@ -38,10 +38,13 @@ const EmailsPage = () => {
   const emails = data?.data || [];
 
   const removeEmail = async (team, email: Email) => {
-    const response = await fetch(`/api/teams/${team.slug}/emails?id=${email.id}`, {
-      method: 'DELETE',
-      headers: defaultHeaders,
-    });
+    const response = await fetch(
+      `/api/teams/${team.slug}/emails?id=${email.id}`,
+      {
+        method: 'DELETE',
+        headers: defaultHeaders,
+      }
+    );
 
     const json = (await response.json()) as ApiResponse;
 
@@ -58,7 +61,7 @@ const EmailsPage = () => {
     <WithLoadingAndError isLoading={isLoading} error={error}>
       {canAccess('team_emails', ['read', 'create', 'delete', 'update']) && (
         <div className="space-y-3">
-        <Emails emails={emails} team={team} removeEmail={removeEmail}/>
+          <Emails emails={emails} team={team} removeEmail={removeEmail} />
         </div>
       )}
     </WithLoadingAndError>

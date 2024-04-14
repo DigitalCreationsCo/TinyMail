@@ -65,7 +65,7 @@ const handlePOST = async (req: NextApiRequest, res: NextApiResponse) => {
   const teamMember = await throwIfNoTeamAccess(req, res);
   throwIfNotAllowed(teamMember, 'team_templates', 'create');
 
-  const { title, description, doc, backgroundColor, image } =
+  const { title, description, doc, templateFields, backgroundColor, image } =
     req.body as Prisma.TemplateCreateArgs['data'];
 
   const templateCreated = await createTemplate({
@@ -73,6 +73,7 @@ const handlePOST = async (req: NextApiRequest, res: NextApiResponse) => {
     description,
     doc,
     image,
+    templateFields,
     backgroundColor,
     teamId: teamMember.team.id,
     authorId: teamMember.user.id,

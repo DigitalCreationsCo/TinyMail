@@ -21,7 +21,7 @@ export default async function handler(
         await handlePOST(req, res);
         break;
       default:
-        res.setHeader('Allow', 'GET, DELETE, PATCH');
+        res.setHeader('Allow', 'GET, POST');
         res.status(405).json({
           error: { message: `Method ${method} Not Allowed` },
         });
@@ -34,7 +34,7 @@ export default async function handler(
   }
 }
 
-// Get templates of a team
+// Get content maps of a team
 const handleGET = async (req: NextApiRequest, res: NextApiResponse) => {
   const teamMember = await throwIfNoTeamAccess(req, res);
   throwIfNotAllowed(teamMember, 'team_content', 'read');
@@ -46,17 +46,20 @@ const handleGET = async (req: NextApiRequest, res: NextApiResponse) => {
   res.status(200).json({ data: contents });
 };
 
-// Create a template for the team
+// Create a content map bind to a template
 const handlePOST = async (req: NextApiRequest, res: NextApiResponse) => {
   const teamMember = await throwIfNoTeamAccess(req, res);
   throwIfNotAllowed(teamMember, 'team_content', 'create');
 
-  const { title, description, source } = req.body as Prisma.ContentCreateInput;
+  const { title, description, source, templateId, contentFields } =
+    req.body as Prisma.ContentMapCreateArgs['data'];
 
   const contentCreated = await connectContent({
     title,
     description,
     source,
+    templateId: templateId || '',
+    contentFields,
     teamId: teamMember.team.id,
     authorId: teamMember.user.id,
   });

@@ -1,8 +1,19 @@
 import { prisma } from '@/lib/prisma';
 import { Prisma } from '@prisma/client';
 
-export const createTemplate = async (param: Prisma.TemplateCreateArgs['data']) => {
-  const { title, description = "", backgroundColor = "", doc, image = "", authorId = '', teamId = '' } = param;
+export const createTemplate = async (
+  param: Prisma.TemplateCreateArgs['data']
+) => {
+  const {
+    title,
+    description = '',
+    backgroundColor = '',
+    doc,
+    templateFields,
+    image = '',
+    authorId = '',
+    teamId = '',
+  } = param;
 
   return await prisma.template.create({
     data: {
@@ -11,8 +22,9 @@ export const createTemplate = async (param: Prisma.TemplateCreateArgs['data']) =
       doc,
       authorId,
       backgroundColor,
+      templateFields,
       teamId,
-      image
+      image,
     },
   });
 };
@@ -28,7 +40,7 @@ export const getTeamTemplates = async (key: { teamId: string }) => {
     where: key,
     orderBy: {
       updatedAt: 'desc',
-    }
+    },
   });
 };
 

@@ -11,10 +11,10 @@ import useCanAccess from 'hooks/useCanAccess';
 import { defaultHeaders } from '@/lib/common';
 import type { ApiResponse } from 'types';
 import toast from 'react-hot-toast';
-import { Content } from '@prisma/client';
+import { ContentMap } from '@prisma/client';
 import Contents from '@/components/content/Contents';
 
-const ContentPage = () => {
+const ContentsPage = () => {
   const { t } = useTranslation('common');
   const { canAccess } = useCanAccess();
   const { team } = useTeam();
@@ -37,11 +37,9 @@ const ContentPage = () => {
 
   const content = data?.data || [];
 
-  const connectContent = async (content: Content) => {};
-
-  const removeContent = async (team, content: Content) => {
+  const removeContent = async (team, content: ContentMap) => {
     const response = await fetch(
-      `/api/teams/${team.slug}/content?id=${content.id}`,
+      `/api/teams/${team.slug}/content/${content.id}`,
       {
         method: 'DELETE',
         headers: defaultHeaders,
@@ -52,7 +50,7 @@ const ContentPage = () => {
       toast.error(json.error.message);
       return;
     }
-    toast.success(t('leave-team-success'));
+    toast.success(t('remove-content-success'));
     mutate();
   };
 
@@ -63,7 +61,6 @@ const ContentPage = () => {
           <Contents
             contents={content}
             team={team}
-            connectContent={connectContent}
             removeContent={removeContent}
           />
         </div>
@@ -83,7 +80,7 @@ export async function getServerSideProps({
   };
 }
 
-export default ContentPage;
+export default ContentsPage;
 
 /**
  * TEMPLATE MAP NOTES:

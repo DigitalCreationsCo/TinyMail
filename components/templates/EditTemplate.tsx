@@ -62,7 +62,6 @@ export default function EditTemplate({
         currentField={currentField}
         setCurrentField={setField}
         editTemplateField={editTemplateField}
-        deleteTemplateField={deleteTemplateField}
         isEditingField={isEditingField}
         setIsEditingField={setIsEditingField}
       />

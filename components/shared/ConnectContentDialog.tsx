@@ -110,6 +110,7 @@ const ConnectContentDialog = ({
           <>
             <hr className="my-2" />
             <ContentFieldMapper
+              templateFields={templateFields}
               contentFields={contentFields}
               headerRowOrientation={headerRowOrientation}
               updateContentField={updateContentField}
@@ -123,7 +124,7 @@ const ConnectContentDialog = ({
       </Modal.Body>
       <Modal.Footer>
         {(data && data.length && (
-          <p className="font-semibold place-self-start">
+          <p className="items-center font-semibold place-self-start">
             {t('connect-content-fields')}
           </p>
         )) || <></>}

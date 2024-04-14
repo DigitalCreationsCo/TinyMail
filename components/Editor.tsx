@@ -10,7 +10,6 @@ export default function EditorComponent({
   initialValue = '',
   template,
   editTemplateField,
-  deleteTemplateField,
   currentField,
   setCurrentField,
   isEditingField,
@@ -23,7 +22,6 @@ export default function EditorComponent({
   template?: Template;
   initialValue?: string;
   editTemplateField?: any;
-  deleteTemplateField?: any;
   currentField?: string | null;
   setCurrentField?: (field: string | null) => void;
   isEditingField?: boolean;
@@ -91,6 +89,7 @@ export default function EditorComponent({
           // }
           // add id attribute to selected block
           element.id = data.id;
+          setCurrentField?.(data.id);
           api.close();
         },
       });
@@ -252,6 +251,7 @@ export default function EditorComponent({
                       editTemplateField?.(selectedBlock.id, data.id);
                       selectedBlock.id = data.id;
                       setIsEditingField?.(false);
+                      setCurrentField?.(data.id);
                     }
                     api.close();
                   },

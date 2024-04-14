@@ -15,13 +15,16 @@ import {
   CheckIcon,
 } from '@heroicons/react/24/outline';
 import classNames from 'classnames';
+import { Template } from '@prisma/client';
 
 export default function GoogleSheetConnect({
+  data,
   setData,
   setHeaderRowOrientation,
   headerRowOrientation,
 }: {
-  setData: Dispatch<SetStateAction<string[][]>>;
+  data: string[][] | null;
+  setData: Dispatch<SetStateAction<string[][] | null>>;
   setHeaderRowOrientation: Dispatch<SetStateAction<'horizontal' | 'vertical'>>;
   headerRowOrientation: 'horizontal' | 'vertical';
 }) {
@@ -60,16 +63,19 @@ export default function GoogleSheetConnect({
     setData(data.values);
   }
   return (
-    <div className="py-2">
+    <div className="space-y-2">
       <p className="font-semibold">{t('google-sheet-connect-description')}</p>
       <div className="flex flex-col sm:flex-row items-end space-x-4">
         <InputWithLabel
           label={t('google-sheet-id')}
           name="source-id"
           aria-label={t('google-sheet-id')}
-          className="w-full max-w-md text-sm"
+          className="w-full max-w-md text-sm border"
           value={sheetId}
-          onChange={(e) => setSheetId(e.target.value)}
+          onChange={(e) => {
+            setData(null);
+            setSheetId(e.target.value);
+          }}
           required
         />
         <InputWithLabel
@@ -78,12 +84,15 @@ export default function GoogleSheetConnect({
           aria-label={t('google-sheet-name')}
           className="w-full max-w-md text-sm"
           value={sheetName}
-          onChange={(e) => setSheetName(e.target.value)}
+          onChange={(e) => {
+            setData(null);
+            setSheetName(e.target.value);
+          }}
           required
         />
       </div>
-      <div className="flex flex-col sm:flex-row items-end space-x-4 justify-between">
-        <div className="dropdown">
+      <div className="flex flex-col sm:flex-row space-x-4 justify-between">
+        <div className="dropdown w-64">
           <p className="px-1">{t('set-header-row-orientation')}</p>
           <div
             tabIndex={0}
@@ -97,15 +106,22 @@ export default function GoogleSheetConnect({
             tabIndex={0}
             className="dropdown-content dark:border-gray-600 p-2 shadow-md bg-base-100 w-full rounded border px-2"
           >
-            {['horizontal', 'vertical']?.map((orn, index) => (
+            {['horizontal', 'vertical']?.map((direction, index) => (
               <li key={index}>
                 <button
+                  type="button"
                   className="w-full flex hover:bg-gray-100 hover:dark:text-black focus:bg-gray-100 focus:outline-none py-2 px-2 rounded text-sm font-medium gap-2 items-center"
                   onClick={() => {
-                    setHeaderRowOrientation(orn as 'horizontal' | 'vertical');
+                    if (document.activeElement) {
+                      (document.activeElement as HTMLElement).blur();
+                    }
+                    setData(null);
+                    setHeaderRowOrientation(
+                      direction as 'horizontal' | 'vertical'
+                    );
                   }}
                 >
-                  {t(orn)}
+                  {t(direction)}
                 </button>
               </li>
             ))}
@@ -114,11 +130,16 @@ export default function GoogleSheetConnect({
         <Button
           type="button"
           variant="outline"
-          className="mt-4 mb-4 sm:mb-0 self-end"
+          className={classNames(
+            data
+              ? 'border-success bg-success hover:bg-success hover:border-success text-inherit hover:text-inherit'
+              : 'border-inherit',
+            'mt-4 mb-4 sm:mb-0 self-end'
+          )}
           onClick={connectGoogleSheet}
           size="md"
         >
-          {t('google-sheet-connect')}
+          {data ? t('google-sheet-connect-success') : t('google-sheet-connect')}
         </Button>
       </div>
     </div>
@@ -126,6 +147,9 @@ export default function GoogleSheetConnect({
 }
 
 export const ContentFieldMapper = ({
+  templates,
+  selectTemplate,
+  setSelectTemplate,
   updateContentField,
   addContentField,
   removeContentField,
@@ -133,6 +157,9 @@ export const ContentFieldMapper = ({
   contentFields,
   data,
 }: {
+  templates: Template[];
+  selectTemplate: Template | null;
+  setSelectTemplate: Dispatch<SetStateAction<Template | null>>;
   contentFields: ContentFields;
   updateContentField: (field: [string, string], index: number) => void;
   addContentField: (field: [string, string]) => void;
@@ -140,13 +167,11 @@ export const ContentFieldMapper = ({
   headerRowOrientation: 'horizontal' | 'vertical';
   data: string[][];
 }) => {
-  console.info('contentFields', contentFields);
+  const [field, setField] = useState<[string, string]>(['', '']);
+  const [editField, setEditField] = useState(true);
+  const [current, setCurrent] = useState<number | null>(null);
 
   const { t } = useTranslation('common');
-
-  const [field, setField] = useState<[string, string]>(['', '']);
-  const [editField, setEditField] = useState(false);
-  const [current, setCurrent] = useState<number | null>(null);
 
   const headerRow =
     headerRowOrientation === 'horizontal' ? data[0] : data.map((row) => row[0]);
@@ -174,6 +199,7 @@ export const ContentFieldMapper = ({
     };
     return (
       <button
+        type="button"
         className={classNames(
           'border p-2 rounded-full h-10',
           'flex flex-row items-center gap-x-2',
@@ -186,11 +212,11 @@ export const ContentFieldMapper = ({
           } else {
             setField([key, value]);
             setCurrent(index);
-            setEditField(true);
+            // setEditField(true);
           }
         }}
       >
-        {key}: {value}
+        {key}:{value}
         {reallyDelete ? (
           <QuestionMarkCircleIcon
             className="w-6 h-6 text-red-400"
@@ -212,11 +238,81 @@ export const ContentFieldMapper = ({
     );
   };
 
+  const SelectTemplate = () => {
+    return (
+      <div className="dropdown w-full">
+        <div
+          tabIndex={1}
+          className="border border-gray-300 dark:border-gray-600 flex h-10 items-center px-4 justify-between cursor-pointer rounded text-sm font-bold"
+        >
+          <div className="flex items-center gap-2">
+            <LinkIcon className="w-5 h-5" />
+            {selectTemplate?.title || t('select-template')}
+          </div>
+          <ChevronUpDownIcon className="w-5 h-5" />
+        </div>
+        <ul
+          tabIndex={1}
+          className="dropdown-content dark:border-gray-600 p-2 shadow-md bg-base-100 w-full rounded border px-2"
+        >
+          {templates?.map((tmplt, index) => (
+            <li key={`select-template-${index}`}>
+              <button
+                type="button"
+                className="flex hover:bg-gray-100 hover:dark:text-black focus:bg-gray-100 focus:outline-none py-2 px-2 rounded text-sm font-medium gap-2 items-center"
+                onClick={() => {
+                  setSelectTemplate(tmplt);
+                }}
+              >
+                {tmplt.title}
+              </button>
+            </li>
+          ))}
+          {}
+        </ul>
+      </div>
+    );
+  };
+
+  const TemplateFieldDropdown = () => (
+    <div className="dropdown w-full">
+      <p>{t('content-field-map-description')}</p>
+      <div
+        tabIndex={2}
+        className="border border-gray-300 dark:border-gray-600 flex h-10 items-center px-4 justify-between cursor-pointer rounded text-sm font-bold"
+      >
+        <div className="flex items-center gap-2">
+          <LinkIcon className="w-5 h-5" />
+          {field[0]}
+        </div>
+        <ChevronUpDownIcon className="w-5 h-5" />
+      </div>
+      <ul
+        tabIndex={2}
+        className="z-10 dropdown-content dark:border-gray-600 p-2 shadow-md bg-base-100 w-full rounded border px-2"
+      >
+        {selectTemplate.templateFields.map((source, index) => (
+          <li key={`data-${index}`} className="z-50">
+            <button
+              className="w-full flex hover:bg-gray-100 hover:dark:text-black focus:bg-gray-100 focus:outline-none py-2 px-2 rounded text-sm font-medium gap-2 items-center"
+              onClick={() => {
+                setField((prev) => [source, prev[1]]);
+              }}
+            >
+              {source}
+            </button>
+          </li>
+        ))}
+        {}
+      </ul>
+    </div>
+  );
+
   const ContentDropdown = () => (
     <div className="dropdown w-full">
       <p>{t('content-field-map-description')}</p>
       <div
-        tabIndex={0}
+        tabIndex={3}
         className="border border-gray-300 dark:border-gray-600 flex h-10 items-center px-4 justify-between cursor-pointer rounded text-sm font-bold"
       >
         <div className="flex items-center gap-2">
@@ -226,7 +322,7 @@ export const ContentFieldMapper = ({
         <ChevronUpDownIcon className="w-5 h-5" />
       </div>
       <ul
-        tabIndex={0}
+        tabIndex={3}
         className="dropdown-content dark:border-gray-600 p-2 shadow-md bg-base-100 w-full rounded border px-2"
       >
         {headerRow?.map((source, index) => (
@@ -250,71 +346,68 @@ export const ContentFieldMapper = ({
   );
 
   return (
-    <div className="pb-4">
-      <div className="min-h-10">
-        <p className="font-semibold">{t('content-fields')}</p>
-        {contentFields.map((field, index) => (
-          <ContentFieldButton key={field[0]} field={field} index={index} />
-        ))}
+    <div className="pb-4 space-y-4">
+      <div className="w-64">
+        <p className="font-semibold">{t('select-template')}</p>
+        <SelectTemplate />
       </div>
-      {/* {'field: ' + field[0]}
-      {', '}
-      {'field content: ' + field[1]} */}
-      {(editField && (
+      {selectTemplate ? (
         <>
-          <p className="font-semibold">{t('update-field')}</p>
-          <div className="flex flex-col sm:flex-row items-end justify-between sm:space-x-4">
-            <InputWithLabel
-              label={t('set-field-name')}
-              name="field"
-              aria-label={t('set-field-name')}
-              className="w-full max-w-md text-sm"
-              value={field?.[0]}
-              onChange={(e) =>
-                setField((prevField) => [e.target.value, prevField[1]])
-              }
-              required
-            />
-            <ContentDropdown />
-            <Button
-              type="button"
-              variant="outline"
-              className="mt-4 mb-4 sm:mb-0 self-end"
-              onClick={() => {
-                if (field[0] && field[1]) {
-                  if (current !== null) {
-                    updateContentField(field, current);
-                  } else {
-                    addContentField([field[0], field[1]]);
-                  }
-                  setField(['', '']);
-                  setCurrent(null);
-                  setEditField(false);
-                }
-              }}
-              size="md"
-            >
-              <CheckIcon className="w-5 h-5" />
-            </Button>
+          <div className="min-h-10">
+            <p className="font-semibold">{t('content-fields')}</p>
+            {contentFields.map((field, index) => (
+              <ContentFieldButton key={field[0]} field={field} index={index} />
+            ))}
           </div>
+          {(editField && (
+            <div>
+              <p className="font-semibold">{t('update-field')}</p>
+              <div className="flex flex-col sm:flex-row items-end justify-between sm:space-x-4">
+                <TemplateFieldDropdown />
+                <ContentDropdown />
+                <Button
+                  type="button"
+                  variant="outline"
+                  className="mt-4 mb-4 sm:mb-0 self-end"
+                  onClick={() => {
+                    if (field[0] && field[1]) {
+                      if (current !== null) {
+                        updateContentField(field, current);
+                      } else {
+                        addContentField([field[0], field[1]]);
+                      }
+                      setField(['', '']);
+                      setCurrent(null);
+                      // setEditField(false);
+                    }
+                  }}
+                  size="md"
+                >
+                  <PlusIcon className="w-5 h-5" />
+                </Button>
+              </div>
+            </div>
+          )) || <></>}
+          {!editField && (
+            <>
+              <p className="font-semibold">{t('add-field')}</p>
+              <Button
+                type="button"
+                variant="outline"
+                className="mt-4 mb-4 sm:mb-0 self-end"
+                onClick={() => {
+                  setField(['', '']);
+                  // setEditField(true);
+                }}
+                size="md"
+              >
+                <PlusIcon className="w-5 h-5" />
+              </Button>
+            </>
+          )}
         </>
-      )) || <></>}
-      {!editField && (
-        <>
-          <p className="font-semibold">{t('add-field')}</p>
-          <Button
-            type="button"
-            variant="outline"
-            className="mt-4 mb-4 sm:mb-0 self-end"
-            onClick={() => {
-              setField(['', '']);
-              setEditField(true);
-            }}
-            size="md"
-          >
-            <PlusIcon className="w-5 h-5" />
-          </Button>
-        </>
+      ) : (
+        <></>
       )}
     </div>
   );
