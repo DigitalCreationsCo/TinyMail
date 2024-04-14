@@ -2,10 +2,9 @@ import { throwIfNoTeamAccess } from 'models/team';
 import { throwIfNotAllowed } from 'models/user';
 import type { NextApiRequest, NextApiResponse } from 'next';
 import { recordMetric } from '@/lib/metrics';
-import { deleteContent, getContent } from 'models/content';
+import { deleteContent, getContent, updateContent } from 'models/content';
 import { sendEvent } from '@/lib/svix';
 import { sendAudit } from '@/lib/retraced';
-import { prisma } from '@/lib/prisma';
 
 export default async function handler(
   req: NextApiRequest,
@@ -78,18 +77,27 @@ const handlePATCH = async (req: NextApiRequest, res: NextApiResponse) => {
   const teamMember = await throwIfNoTeamAccess(req, res);
   throwIfNotAllowed(teamMember, 'team_content', 'update');
 
-  const { id, title, description, source, teamId, authorId } = req.body as any;
+  const {
+    id,
+    title,
+    description,
+    source,
+    teamId,
+    authorId,
+    templateId,
+    contentFields,
+  } = req.body as any;
 
-  const contentUpdated = await prisma.content.update({
-    where: {
-      id,
-    },
-    data: {
+  const contentUpdated = await updateContent({
+    id,
+    update: {
       title,
       description,
       source,
       teamId,
       authorId,
+      templateId,
+      contentFields,
     },
   });
 

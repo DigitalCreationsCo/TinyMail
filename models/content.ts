@@ -48,6 +48,19 @@ export const getTeamContent = async (key: { teamId: string }) => {
   });
 };
 
+export const updateContent = async ({
+  id,
+  update,
+}: {
+  id: string;
+  update: Prisma.ContentMapUpdateArgs['data'];
+}) => {
+  return await prisma.contentMap.update({
+    where: { id },
+    data: update,
+  });
+};
+
 export const deleteContent = async (key: { id: string }) => {
   return await prisma.contentMap.delete({
     where: key,

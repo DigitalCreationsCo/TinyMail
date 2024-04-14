@@ -16,11 +16,11 @@ export default function EditorComponent({
   setIsEditingField,
   templateFields,
 }: {
-  templateFields: Set<string>;
   editorRef: MutableRefObject<Editor | null>;
   apiKey: string;
-  template?: Template;
   initialValue?: string;
+  template?: Template;
+  templateFields?: Set<string>;
   editTemplateField?: any;
   currentField?: string | null;
   setCurrentField?: (field: string | null) => void;

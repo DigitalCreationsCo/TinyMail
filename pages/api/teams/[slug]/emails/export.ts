@@ -1,6 +1,6 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 import { recordMetric } from '@/lib/metrics';
-import { createEmail, getEmail } from 'models/template';
+import { createEmail, getEmail } from 'models/email';
 import jsdom from 'jsdom';
 
 export default async function handler(
@@ -94,7 +94,7 @@ const handlePOST = async (req: NextApiRequest, res: NextApiResponse) => {
 
   recordMetric('template.fetched');
 
-  let content = wrapHTMLMarkup(template.content, template.backgroundColor);
+  let content = wrapHTMLMarkup(template.doc, template.backgroundColor);
 
   try {
     content = addDateToHeader(content, emailContent.date);
@@ -124,7 +124,7 @@ const handlePOST = async (req: NextApiRequest, res: NextApiResponse) => {
   const templateCreated = await createEmail({
     teamId: template.teamId,
     title: emailContent.title,
-    content: content,
+    doc: content,
     authorId: template.authorId,
     backgroundColor: template.backgroundColor,
     image: template.image,

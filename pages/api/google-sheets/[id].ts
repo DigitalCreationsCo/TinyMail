@@ -1,14 +1,8 @@
 import { throwIfNoTeamAccess } from 'models/team';
 import { throwIfNotAllowed } from 'models/user';
 import type { NextApiRequest, NextApiResponse } from 'next';
-import { recordMetric } from '@/lib/metrics';
-import { GoogleSheetData, fetchGoogleSheet } from '@/lib/google-sheet';
-import { getCookie } from 'cookies-next';
-import { sessionTokenCookieName } from '@/lib/nextAuth';
-import * as sheetsApi from '@googleapis/sheets';
 import env from '@/lib/env';
 import * as google from 'googleapis';
-import { getGoogleProvider } from '@/lib/googleAuthClient';
 import { prisma } from '@/lib/prisma';
 
 export default async function handler(

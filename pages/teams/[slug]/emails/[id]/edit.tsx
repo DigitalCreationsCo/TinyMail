@@ -139,7 +139,11 @@ const EditTemplate = ({
           </div>
         </div>
         <div id="editor-window">
-          <EditorComponent editorRef={editor} apiKey={apiKey} />
+          <EditorComponent
+            editorRef={editor}
+            apiKey={apiKey}
+            initialValue={template.doc}
+          />
         </div>
       </div>
     </form>
