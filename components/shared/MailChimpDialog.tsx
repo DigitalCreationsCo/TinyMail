@@ -1,9 +1,7 @@
 import { useTranslation } from 'next-i18next';
-import { Button, Input } from 'react-daisyui';
+import { Button } from 'react-daisyui';
 import Modal from './Modal';
 import { useState } from 'react';
-import Card from './Card';
-import { set } from 'zod';
 import InputWithLabel from './InputWithLabel';
 
 interface MailChimpDialogProps {
@@ -50,7 +48,7 @@ const MailChimpDialog = ({
           target="_blank"
           className="link"
         >
-          What is Mandrill?
+          {`What is Mandrill?`}
         </a>
       </Modal.Header>
       <Modal.Body className="text-sm leading-6">

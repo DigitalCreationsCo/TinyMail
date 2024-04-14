@@ -6,19 +6,16 @@ import { useTranslation } from 'next-i18next';
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
 import { Button } from 'react-daisyui';
 import { useRouter } from 'next/router';
-import { useRef, useState } from 'react';
-import { PencilIcon } from '@heroicons/react/24/outline';
+import { useState } from 'react';
 import { useFormik, validateYupSchema } from 'formik';
 import toast from 'react-hot-toast';
 import * as Yup from 'yup';
-import html2canvas from 'html2canvas-pro';
 import { useSession } from 'next-auth/react';
 import type { ApiResponse } from 'types';
 import '@/styles/editor.module.css';
 
 import { defaultHeaders } from '@/lib/common';
 import { ContentMap, ContentSource, Prisma, Template } from '@prisma/client';
-import { Editor } from '@tinymce/tinymce-react';
 import { getTeamTemplates } from 'models/template';
 import { getTeamMember } from 'models/team';
 import { getSession } from '@/lib/session';
@@ -30,7 +27,7 @@ import {
 import GoogleSheetConnect, {
   ContentFieldMapper,
 } from '@/components/shared/GoogleSheetConnect';
-import { ContentFields } from '@/components/shared/ConnectContentDialog';
+import { ContentFields } from 'types/content';
 
 const schema = Yup.object().shape({
   title: Yup.string().required('Enter a title'),
@@ -38,14 +35,11 @@ const schema = Yup.object().shape({
 });
 
 const CreateContentPage = ({ templates }: { templates: Template[] }) => {
-  const editor = useRef<Editor | null>(null);
   const router = useRouter();
   const { t } = useTranslation('common');
 
   const [selectTemplate, setSelectTemplate] = useState<Template | null>(null);
-  const [templateFields, setTemplateFields] = useState<Set<string>>(new Set());
   const [contentFields, setContentFields] = useState<ContentFields>([]);
-  const [isEditingField, setIsEditingField] = useState(false);
   const [source, setSource] = useState<string>(t('connect-content-source'));
   const [sourceData, setSourceData] = useState<string[][] | null>(null);
   const [headerRowOrientation, setHeaderRowOrientation] = useState<
@@ -74,14 +68,14 @@ const CreateContentPage = ({ templates }: { templates: Template[] }) => {
       teamId: '',
       authorId: '',
     },
-    onSubmit: async (values) => {
+    onSubmit: async () => {
       const saveContentMap: Prisma.ContentMapCreateArgs['data'] = {
-        title: `${selectTemplate.title}-content-map-${new Date().toISOString()}`,
+        title: `${selectTemplate?.title}-content-map-${new Date().toISOString()}`,
         description: '',
         source: source as ContentSource,
         contentFields: contentFields.map(([key, value]) => `${key}:${value}`),
-        templateId: selectTemplate.id,
-        teamId: team.id,
+        templateId: selectTemplate!.id,
+        teamId: team!.id,
         authorId: user.id,
       };
 
@@ -94,7 +88,6 @@ const CreateContentPage = ({ templates }: { templates: Template[] }) => {
       });
 
       const json = (await response.json()) as ApiResponse<ContentMap[]>;
-
       if (!response.ok) {
         toast.error(json.error.message);
         return;
@@ -103,8 +96,8 @@ const CreateContentPage = ({ templates }: { templates: Template[] }) => {
       toast.success(t('successfully-save-successful'));
       formik.resetForm();
 
-      // redirect to the team templates page
-      router.push('/teams/[slug]/content', `/teams/${team.slug}/content`);
+      // redirect to the team content page
+      router.push('/teams/[slug]/content', `/teams/${team!.slug}/content`);
     },
   });
 

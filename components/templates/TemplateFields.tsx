@@ -12,7 +12,7 @@ const TemplateFields = ({
   deleteTemplateField,
   currentField,
   setField,
-  isEditingField,
+  // isEditingField,
   setIsEditingField,
 }: {
   templateFields: Set<string>;
@@ -23,7 +23,7 @@ const TemplateFields = ({
   isEditingField?: boolean;
   setIsEditingField?: (isEditingField: boolean) => void;
 }) => {
-  const [current, setCurrent] = useState(-1);
+  // const [current, setCurrent] = useState(-1);
 
   const { t } = useTranslation('common');
 
@@ -33,7 +33,7 @@ const TemplateFields = ({
       {Array.from(templateFields).map((field, index) => (
         <TemplateFieldButton
           key={`field-${field}-${index}`}
-          current={current}
+          // current={current}
           field={field}
           index={index}
           editTemplateField={editTemplateField}
@@ -50,16 +50,16 @@ const TemplateFields = ({
 export default TemplateFields;
 
 const TemplateFieldButton = ({
-  current,
+  // current,
   field,
-  editTemplateField,
+  // editTemplateField,
   deleteTemplateField,
-  index,
+  // index,
   currentField,
   setField,
   setIsEditingField,
 }: {
-  current: number;
+  current?: number;
   field: string;
   index?: number;
   editTemplateField: any;

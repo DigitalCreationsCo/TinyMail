@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { PropsWithChildren, type ReactElement } from 'react';
+import { type ReactElement } from 'react';
 import { useTranslation } from 'next-i18next';
 import type { NextPageWithLayout } from 'types';
 import { GetServerSidePropsContext } from 'next';
