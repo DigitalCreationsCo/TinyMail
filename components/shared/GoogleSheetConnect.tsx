@@ -21,29 +21,35 @@ export default function GoogleSheetConnect({
   setData,
   setHeaderRowOrientation,
   headerRowOrientation,
+  sourceId,
+  setSourceId,
+  sourceRange,
+  setSourceRange,
 }: {
   data: string[][] | null;
   setData: Dispatch<SetStateAction<string[][] | null>>;
   setHeaderRowOrientation: Dispatch<SetStateAction<'horizontal' | 'vertical'>>;
   headerRowOrientation: 'horizontal' | 'vertical';
+  sourceId: string;
+  setSourceId: Dispatch<SetStateAction<string>>;
+  sourceRange: string;
+  setSourceRange: Dispatch<SetStateAction<string>>;
 }) {
   const { t } = useTranslation('common');
-  const [sheetId, setSheetId] = useState('');
-  const [sheetName, setSheetName] = useState('');
 
   async function connectGoogleSheet() {
-    if (!sheetId) {
+    if (!sourceId) {
       toast.error(t('google-sheet-id-required'));
       return;
     }
 
-    if (!sheetName) {
+    if (!sourceRange) {
       toast.error(t('google-sheet-name-required'));
       return;
     }
 
     const response = await fetch(
-      `/api/google-sheets/${sheetId}?sheetName=${sheetName}`
+      `/api/google-sheets/${sourceId}?sheetName=${sourceRange}`
     );
 
     if (!response.ok) {
@@ -70,10 +76,10 @@ export default function GoogleSheetConnect({
           name="source-id"
           aria-label={t('google-sheet-id')}
           className="w-full max-w-md text-sm border"
-          value={sheetId}
+          value={sourceId}
           onChange={(e) => {
             setData(null);
-            setSheetId(e.target.value);
+            setSourceId(e.target.value);
           }}
           required
         />
@@ -82,10 +88,10 @@ export default function GoogleSheetConnect({
           name="source-name"
           aria-label={t('google-sheet-name')}
           className="w-full max-w-md text-sm"
-          value={sheetName}
+          value={sourceRange}
           onChange={(e) => {
             setData(null);
-            setSheetName(e.target.value);
+            setSourceRange(e.target.value);
           }}
           required
         />

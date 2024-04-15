@@ -48,22 +48,23 @@ const EditTemplatePage = ({
 
   const formik = useFormik({
     initialValues: {
-      title: '',
-      description: '',
-      backgroundColor: '',
+      title: template.title,
+      description: template.description,
+      backgroundColor: template.backgroundColor,
       templateFields: Array.from(templateFields),
-      image: '',
-      doc: '',
-      teamId: '',
-      authorId: '',
+      image: template.image,
+      doc: template.doc,
+      teamId: template.teamId,
+      authorId: template.authorId,
     },
     onSubmit: async (values) => {
       const updateTemplate = {
         id: template.id,
         title: values.title,
-        description: '',
+        description: values.description,
         backgroundColor:
-          editor.current?.editor?.getBody().style.backgroundColor || '',
+          editor.current?.editor?.getBody().style.backgroundColor ||
+          values.backgroundColor,
         // take a screenshot of the editor content and save it as an image
         image: encodeURIComponent(
           await (
@@ -72,7 +73,7 @@ const EditTemplatePage = ({
             )
           ).toDataURL('image/png')
         ),
-        doc: editor.current?.editor?.getContent() || '',
+        doc: editor.current?.editor?.getContent() || values.doc,
         templateFields: values.templateFields,
         teamId: team!.id,
         authorId: data!.user.id,

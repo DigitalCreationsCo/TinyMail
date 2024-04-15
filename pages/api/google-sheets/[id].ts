@@ -1,9 +1,7 @@
 import { throwIfNoTeamAccess } from 'models/team';
 import { throwIfNotAllowed } from 'models/user';
 import type { NextApiRequest, NextApiResponse } from 'next';
-import env from '@/lib/env';
-import * as google from 'googleapis';
-import { prisma } from '@/lib/prisma';
+import { GoogleSheetData, fetchGoogleSheet } from '@/lib/google-sheet';
 
 export default async function handler(
   req: NextApiRequest,
@@ -44,47 +42,13 @@ const handleGET = async (req: NextApiRequest, res: NextApiResponse) => {
 
   const sheetId = id as string;
 
-  const auth = new google.Auth.OAuth2Client({
-    clientId: env.google.clientId,
-    clientSecret: env.google.clientSecret,
-    redirectUri: '/auth/google/callback',
-  });
-
-  const account = await prisma.account.findFirst({
-    where: {
-      userId: teamMember.user.id,
-    },
-    select: {
-      access_token: true,
-    },
-  });
-
-  if (!account || !account.access_token) {
-    const auth_url = auth.generateAuthUrl({
-      scope: ['https://www.googleapis.com/auth/spreadsheets.readonly'],
-    });
-    return res.status(302).json({ auth_url });
-  }
-
-  const { access_token } = account;
-
-  console.info('access_token', access_token);
-  auth.setCredentials({ access_token });
-
-  const { token } = await auth.getAccessToken();
-  console.info('token', token);
-
-  const sheets = new google.sheets_v4.Sheets({ auth });
-  const response = await sheets.spreadsheets.values.get({
-    spreadsheetId: sheetId,
+  const sheet = (await fetchGoogleSheet({
+    req,
+    res,
+    userId: teamMember.user.id,
+    sheetId,
     range: sheetName,
-  });
+  })) as GoogleSheetData;
 
-  // fetch google sheet data
-  // const sheet = await fetchGoogleSheet(teamMember.user.email!, sessionToken, sheetId, [], 'id', '1');
-  // return sheet;
-
-  // recordMetric('template.fetched');
-
-  res.status(200).json(response.data);
+  res.status(200).json(sheet);
 };

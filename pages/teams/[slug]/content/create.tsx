@@ -41,6 +41,8 @@ const CreateContentPage = ({ templates }: { templates: Template[] }) => {
   const [selectTemplate, setSelectTemplate] = useState<Template | null>(null);
   const [contentFields, setContentFields] = useState<ContentFields>([]);
   const [source, setSource] = useState<string>(t('connect-content-source'));
+  const [sourceId, setSourceId] = useState<string>('');
+  const [sourceRange, setSourceRange] = useState<string>('');
   const [sourceData, setSourceData] = useState<string[][] | null>(null);
   const [headerRowOrientation, setHeaderRowOrientation] = useState<
     'horizontal' | 'vertical'
@@ -64,6 +66,9 @@ const CreateContentPage = ({ templates }: { templates: Template[] }) => {
       description: '',
       contentFields: [],
       source: undefined as any,
+      sourceId: '',
+      sourceRange: '',
+      headerOrientation: 'horizontal',
       templateId: '',
       teamId: '',
       authorId: '',
@@ -73,6 +78,9 @@ const CreateContentPage = ({ templates }: { templates: Template[] }) => {
         title: `${selectTemplate?.title}-content-map-${new Date().toISOString()}`,
         description: '',
         source: source as ContentSource,
+        sourceId,
+        sourceRange,
+        headerOrientation: headerRowOrientation,
         contentFields: contentFields.map(([key, value]) => `${key}:${value}`),
         templateId: selectTemplate!.id,
         teamId: team!.id,
@@ -169,8 +177,12 @@ const CreateContentPage = ({ templates }: { templates: Template[] }) => {
           <GoogleSheetConnect
             data={sourceData}
             setData={setSourceData}
-            setHeaderRowOrientation={setHeaderRowOrientation}
+            sourceId={sourceId}
+            setSourceId={setSourceId}
+            sourceRange={sourceRange}
+            setSourceRange={setSourceRange}
             headerRowOrientation={headerRowOrientation}
+            setHeaderRowOrientation={setHeaderRowOrientation}
           />
         )) || <></>}
         {(sourceData && sourceData.length && (

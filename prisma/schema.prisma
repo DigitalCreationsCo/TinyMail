@@ -71,6 +71,7 @@ model User {
   accounts    Account[]
   sessions    Session[]
   invitations Invitation[]
+  apiKeys     ApiKey[]
 }
 
 model Team {
@@ -139,12 +140,14 @@ model ApiKey {
   id         String    @id @default(uuid())
   name       String
   teamId     String
+  userId     String
   hashedKey  String    @unique
   createdAt  DateTime  @default(now())
   updatedAt  DateTime  @default(now())
   expiresAt  DateTime?
   lastUsedAt DateTime?
-
+  
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
   team Team @relation(fields: [teamId], references: [id], onDelete: Cascade)
 
   @@index([teamId])
@@ -210,14 +213,17 @@ model ContentMap {
   description String
 
   source      ContentSource
+  sourceId    String @default("source")
+  sourceRange String?
   contentFields String[]
+  headerOrientation orientation @default(horizontal)
 
-  templateId String
+  templateId  String
   template    Template @relation(fields: [templateId], references: [id], onDelete: Cascade)
 
   teamId      String
   authorId    String
-  team Team @relation(fields: [teamId], references: [id], onDelete: Cascade)
+  team Team   @relation(fields: [teamId], references: [id], onDelete: Cascade)
   author User @relation(fields: [authorId], references: [id], onDelete: Cascade)
 
   createdAt   DateTime @default(now())
@@ -226,6 +232,11 @@ model ContentMap {
 
 enum ContentSource {
   GOOGLE_SHEET
+}
+
+enum orientation {
+  horizontal
+  vertical
 }
 
 model Template {

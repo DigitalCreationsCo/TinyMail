@@ -1,93 +1,54 @@
-import * as sheetsApi from '@googleapis/sheets';
 import env from './env';
+import * as google from 'googleapis';
+import { prisma } from '@/lib/prisma';
+import type { NextApiRequest, NextApiResponse } from 'next';
 
-export async function fetchGoogleSheet(
-  email: string,
-  token: string,
-  source: string,
-  contentFields: string[],
-  lookupColumn: string,
-  lookupValue: any
-): Promise<any | null> {
+export async function fetchGoogleSheet({
+  req,
+  res,
+  userId,
+  sheetId,
+  range,
+}: {
+  req: NextApiRequest;
+  res: NextApiResponse;
+  userId: string;
+  sheetId: string;
+  range: string;
+}): Promise<GoogleSheetData | void> {
   try {
-    const auth = new sheetsApi.auth.OAuth2({
+    const auth = new google.Auth.OAuth2Client({
       clientId: env.google.clientId,
       clientSecret: env.google.clientSecret,
+      redirectUri: '/auth/google/callback',
     });
 
-    auth.generateAuthUrl({
-      access_type: 'offline',
-      scope: ['https://www.googleapis.com/auth/spreadsheets.readonly'],
+    const account = await prisma.account.findFirst({
+      where: {
+        userId,
+      },
+      select: {
+        access_token: true,
+      },
     });
-    auth.refreshHandler = async () => {
-      const newToken = await fetch(
-        `https://oauth2.googleapis.com/token?refresh_token=${token}&client_id=${env.google.clientId}&client_secret=${env.google.clientSecret}&grant_type=refresh_token`,
-        {
-          method: 'POST',
-        }
-      );
-      const data = await newToken.json();
-      console.info(' refreshHandler data', data);
-      auth.setCredentials({
-        access_token: data.access_token,
+
+    if (!account || !account.access_token) {
+      const auth_url = auth.generateAuthUrl({
+        scope: ['https://www.googleapis.com/auth/spreadsheets.readonly'],
       });
-      return {
-        access_token: data.access_token,
-        expiry_date: data.expires_in,
-      };
-    };
-    const sheets = sheetsApi.sheets({ version: 'v4', auth });
-
-    // Get data from the Google Sheet
-    const response = await sheets.spreadsheets.values.get({
-      spreadsheetId: source,
-      range: 'Sheet1', // Change 'Sheet1' to the name of your sheet
-    });
-
-    console.info('response', response.data);
-
-    const rows = response.data.values;
-
-    if (rows?.length) {
-      const headerRow = rows[0];
-      const columnIndexMap: { [key: string]: number } = {};
-
-      // Map column indices to their respective column names
-      headerRow.forEach((header, index) => {
-        columnIndexMap[header] = index;
-      });
-
-      // Find the index of the lookup column
-      const lookupColumnIndex = columnIndexMap[lookupColumn];
-
-      if (lookupColumnIndex !== undefined) {
-        // Search for the row containing the lookup value
-        for (let i = 1; i < rows.length; i++) {
-          const row = rows[i];
-          if (row[lookupColumnIndex] === lookupValue) {
-            // Extract data according to the provided contentFields
-            const rowData: { [key: string]: string } = {};
-            contentFields.forEach((field) => {
-              const columnIndex = columnIndexMap[field];
-              if (columnIndex !== undefined) {
-                rowData[field] = row[columnIndex] || ''; // Ensure data exists or default to an empty string
-              } else {
-                rowData[field] = ''; // If field doesn't exist, set to an empty string
-              }
-            });
-            return rowData;
-          }
-        }
-        console.error('Lookup value not found.');
-        return null;
-      } else {
-        console.error('Lookup column not found.');
-        return null;
-      }
-    } else {
-      console.error('No data found.');
-      return null;
+      return res.status(302).json({ auth_url });
     }
+
+    const { access_token } = account;
+    auth.setCredentials({ access_token });
+
+    const sheets = new google.sheets_v4.Sheets({ auth });
+
+    const response = await sheets.spreadsheets.values.get({
+      spreadsheetId: sheetId,
+      range,
+    });
+    return response.data as GoogleSheetData;
   } catch (error: any) {
     console.error('The API returned an error:', error);
     throw new Error(error.message);
