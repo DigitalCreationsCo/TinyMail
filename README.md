@@ -74,7 +74,7 @@ Google OAuth2:
 Obtain your Google Client ID and Client Secret from the Google Cloud Console.
 Configure the app's OAuth2 consent screen and authorized redirect URIs.
 
-##Environment Variables:
+## Environment Variables:
 PORT: Port number for the application (default: 3000).
 GOOGLE_CLIENT_ID and GOOGLE_CLIENT_SECRET: Credentials for Google Sheets integration.
 SESSION_SECRET: Secret key for session management.
