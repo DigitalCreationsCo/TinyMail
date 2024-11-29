@@ -59,14 +59,14 @@
 
 4. Set up environment variables: Create a .env file in the project root with the following:
    ```env
-PORT=3000
-GOOGLE_CLIENT_ID=your-google-client-id
-GOOGLE_CLIENT_SECRET=your-google-client-secret
-SESSION_SECRET=your-session-secret
+   PORT=3000
+   GOOGLE_CLIENT_ID=your-google-client-id
+   GOOGLE_CLIENT_SECRET=your-google-client-secret
+   SESSION_SECRET=your-session-secret
 
 4. Start the application:
    ```bash
-npm start
+   npm start
 
 ## Configuration
 Google OAuth2:
