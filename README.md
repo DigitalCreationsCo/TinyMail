@@ -1,7 +1,7 @@
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="https://github.com/DigitalCreationsCo/TinyMail/blob/main/public/logo-square.png">
   <source media="(prefers-color-scheme: light)" srcset="https://github.com/DigitalCreationsCo/TinyMail/blob/main/public/logo-square.png">
-  <img alt="Tiny Mail Logo" src="https://github.com/DigitalCreationsCo/TinyMail/blob/main/public/logo-square.png">
+  <img alt="Tiny Mail Logo" src="https://github.com/DigitalCreationsCo/TinyMail/blob/main/public/logo-square.png" height="200" width="200">
 </picture>
 
 # Tiny Mail
