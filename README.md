@@ -6,7 +6,7 @@
 
 # Tiny Mail
 
-**Tiny Mail** is a powerful application designed to streamline email creation and customization using prewritten templates. With integrations for Google Sheets and OAuth2-powered authentication, Tiny Mail enables users to automate their email workflows efficiently. Whether you're managing newsletters, email series, or one-off communications, Tiny Mail provides the tools you need for hassle-free email management.
+**Tiny Mail** is an application designed to streamline email creation and customization using user-created templates. With integrations for Google Sheets and OAuth2-powered authentication, Tiny Mail enables users to automate their outgoing email workflows efficiently. Whether you're managing newsletters, email series, or one-off communications, Tiny Mail provides the tools you need to produce hassle-free email content.
 
 ## Features
 
